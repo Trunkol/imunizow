@@ -28,7 +28,7 @@
 
     <div class="row" style="padding-bottom: 10px;">
         <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
-            <a href="{% url 'gestao:editar_estabelecimento' estabelecimento.pk %}" class="btn btn-block btn-primary pull-right">Editar Estabelecimento</a>
+            <a href="{% url 'gestao:editar_estabelecimento' estabelecimento.pk %}" class="btn btn-rounded btn-block btn-primary pull-right">Editar Estabelecimento</a>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
 
     <div class="row" style="padding-bottom: 10px;">
         <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
-            <a href="#" class="btn btn-block btn-success pull-right">Adicionar Profissional</a>
+            <a href="{% url 'gestao:adicionar_profissional' estabelecimento.pk %}" class="btn btn-rounded btn-block btn-success pull-right">Adicionar Profissional</a>
         </div>
     </div>
     
@@ -85,24 +85,38 @@
                             <tr>
                                 <th data-priority="1">#</th>
                                 <th data-priority="1">Estabelecimento</th>
-                                <th data-priority="1">CNES</th>
+                                <th data-priority="1">Ativo</th>
+                                <th data-priority="1">Ações</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <tr id="{{estabelecimento.estabelecimento__id}}">
-                                <td>{{estabelecimento.id}}</td>
-                                <td>{{estabelecimento.nome }}</td>
-                                <td>{{estabelecimento.cnes }}</td>
-                            </tr>
+                            {% for prof in profissionais_saude %}
+                                <tr id="{{estabelecimento.estabelecimento__id}}">
+                                    <td>{{prof.id}}</td>
+                                    <td>{{prof.pessoa_fisica.nome }}</td>
+                                    <td>
+                                        {% if prof.ativo %}
+                                            <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Sim</span>
+                                        {% else %}                                 
+                                            <span class="btn btn-danger btn-rounded width-sm waves-effect waves-light">Não</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if prof.ativo %}
+                                            <a class="btn btn-rounded btn-danger" href="{% url 'gestao:desabilitar_profissional' estabelecimento.pk prof.pk %}">Desabilitar</a>
+                                        {% else %}                                 
+                                            <a class="btn btn-rounded btn-success" href="{% url 'gestao:habilitar_profissional' estabelecimento.pk prof.pk %}">Habilitar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div> <!-- end card body-->
             </div> <!-- end card -->
         </div><!-- end col-->
     </div>
-
-
 {% endblock %}
 
 {% block scripts %}

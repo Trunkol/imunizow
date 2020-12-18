@@ -25,6 +25,12 @@
         </div>
     </div>
 
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-9 col-lg-3">    
+            <a href="{% url 'gestao:cadastrar_estabelecimento' %}" class="btn btn-block btn-rounded btn-success pull-right">Cadastrar Estabelecimento</a>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -35,6 +41,7 @@
                                 <th data-priority="2">#</th>
                                 <th data-priority="3">Estabelecimento</th>
                                 <th data-priority="2">CNES</th>
+                                <th data-priority="2">Prestador</th>
                                 <th data-priority="2">Ações</th>
                             </tr>
                         </thead>
@@ -46,7 +53,15 @@
                                     <td>{{estabelecimento.nome }}</td>
                                     <td>{{estabelecimento.cnes }}</td>
                                     <td>
-                                        <a class="btn btn-primary" href="{% url 'gestao:detalhar_estabelecimento' estabelecimento.pk %}">Detalhar</a>
+                                        {% if estabelecimento.prestador %}
+                                            <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Sim</span>
+                                        {% else %}                                 
+                                            <span class="btn btn-danger btn-rounded width-sm waves-effect waves-light">Não</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-rounded btn-primary" href="{% url 'gestao:detalhar_estabelecimento' estabelecimento.pk %}">Detalhar</a>
+                                        <a class="btn btn-rounded btn-info" href="{% url 'gestao:habilitar_prestador' estabelecimento.pk %}">Habilitar Prestador</a>
                                     </td>
                                 </tr>
                             {% endfor %}

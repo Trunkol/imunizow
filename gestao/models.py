@@ -47,8 +47,7 @@ class PessoaFisica(models.Model):
     cep = models.CharField(u'CEP', null=True, blank=True, max_length=15)
     
     class Meta:
-        verbose_name = u'Integrante da SESAP'
-        verbose_name_plural = u'Integrantes da SESAP'
+        verbose_name = u'Pessoa Fisica'
 
     def __str__(self):
         return self.nome
@@ -115,6 +114,7 @@ class Estabelecimento(models.Model):
     ativo = models.BooleanField(verbose_name=u'Ativo',default=True)
     latitude = models.CharField('Latitude', max_length=255, null=True, blank=True)
     longitude = models.CharField('Longitude', max_length=255, null=True, blank=True)
+    prestador = models.BooleanField(verbose_name=u'Prestador', default=False)
     
     class Meta:
         verbose_name = u'Estabelecimento de Saúde'
@@ -151,9 +151,8 @@ class Estabelecimento(models.Model):
 
 class ProfissionalSaude(models.Model):
     pessoa_fisica = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
-    estabelecimentos = models.ManyToManyField(Estabelecimento, through='gestao.ProfissionalSaudeEstabelecimento')
-
-class ProfissionalSaudeEstabelecimento(models.Model):
-    profissional_saude = models.ForeignKey(ProfissionalSaude, on_delete=models.CASCADE)
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)
-    ativo = models.BooleanField()
+    ativo = models.BooleanField(verbose_name=u'Ativo', default=False)
+    
+    class Meta:
+        unique_together = ('pessoa_fisica', 'estabelecimento')

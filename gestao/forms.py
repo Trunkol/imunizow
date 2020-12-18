@@ -2,13 +2,13 @@ from django import forms
 from django.db import transaction
 from django.urls import reverse
 from django_select2.forms import Select2MultipleWidget, ModelSelect2Widget, Select2Widget, ModelSelect2MultipleWidget
-from gestao.models import PessoaFisica, Municipio, ProfissionalSaude, ProfissionalSaudeEstabelecimento, Estabelecimento
+from gestao.models import PessoaFisica, Municipio, ProfissionalSaude, Estabelecimento
 
-class PessoaFisicaForm(forms.Form):
+class PessoaFisicaForm(forms.ModelForm):
     cpf = forms.CharField(label=u'CPF', widget=forms.TextInput(attrs={'placeholder': '00.000.000-00', 'class': "form-control", 'data-toggle': "input-mask", 'data-mask-format': "000.000.000-00"}))
     nome = forms.CharField(label='Nome Completo', widget=forms.TextInput(attrs={'placeholder': 'nome completo', 'class': "form-control"}))
     email = forms.CharField(label=u'Email', required=True, widget=forms.TextInput(attrs={'placeholder': 'email@email.com', 'class': "form-control"}))
-    data_nascimento = forms.DateField(label=u'Data de Nascimento', widget=forms.DateInput(format='%d/%m/%Y',
+    data_nascimento = forms.DateField(label=u'Data de Nascimento', input_formats=['%d/%m/%Y'], widget=forms.DateInput(format='%d/%m/%Y',
                                                                                      attrs={'placeholder': 'dia/mês/ano', 'class': 'form-control', 'data-toggle': "input-mask", 'data-mask-format': "00/00/0000"}))
     sexo = forms.ChoiceField(label='Sexo', choices=PessoaFisica.SEXO_FORM_CHOICES,  widget=Select2Widget(attrs={'class': "form-control", 'data-placeholder': 'Selecione o sexo'}))
     celulares = forms.CharField(label='Celular', required=False, widget=forms.TextInput(attrs={'placeholder': '(00) 00000-0000', 'class': "form-control", 'data-toggle': "input-mask", 'data-mask-format': "(00) 00000-0000"}))
@@ -22,6 +22,10 @@ class PessoaFisicaForm(forms.Form):
     municipio = forms.ModelChoiceField(label='Município', queryset=Municipio.objects, required=True,
                                        widget=ModelSelect2Widget(model=Municipio, search_fields=['nome__icontains'],
                                                                  attrs={'class': "form-control", "data-minimum-input-length": "0", "data-placeholder": "Busque e selecione um município"}))
+
+    class Meta:
+        model = PessoaFisica
+        exclude = ('user',)
 
 
 class EstabelecimentoForm(forms.ModelForm):

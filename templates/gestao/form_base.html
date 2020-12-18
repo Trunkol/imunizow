@@ -2,47 +2,158 @@
 
 {% load static %}
 
+{% block css %}
+    {{ form.media.css }}
+    <link href="{% static 'libs/select2/select2.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
 {% block body %}
-<h2>{{ title }}</h2>
-    <div class="card mt-3">
-        <div class="card-body">
-            {% if form.non_field_errors  %}
-                <div class="alert alert-danger">
-                    Por favor, corrija o(s) erro(s) à seguir: <br/><br/>
-                    <strong>{{ form.non_field_errors }}</strong>
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="page-title">{{title}}</h4>
+                
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">Gestão</li>
+                        <li class="breadcrumb-item"><a href="{% url 'gestao:estabelecimentos' %}">Estabelecimentos</a></li>
+                        <li class="breadcrumb-item active">{{title}}</li>
+                    </ol>
                 </div>
-            {% endif %}
-            <form action="." method="post" id="login-form" class="parsley-form">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-12">
-                        {% for field in form %}
-                            <div class="form-group row mb-3">
-                                <label class="col-md-3 col-form-label" for="cns"> {{ field.label }}</label>
-                                <div class="col-md-9">
-                                    {{ field }}
-                                    <small>{{ field.help_text }}</small>
-                                    <small><font color="red"><b>{{ field.errors }}</b></font></small>
-                                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-3">
+                <div class="card-body">
+                    {% if form.non_field_errors  %}
+                        <div class="alert alert-danger">
+                            Por favor, corrija o(s) erro(s) à seguir: <br/><br/>
+                            <strong>{{ form.non_field_errors }}</strong>
+                        </div>
+                    {% endif %}
+                    <form action="." method="post" id="login-form" class="parsley-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-12">
+                                {% for field in form %}
+                                    <div class="form-group row mb-3">
+                                        <label class="col-md-3 col-form-label" for="cns"> {{ field.label }}</label>
+                                        <div class="col-md-9">
+                                            {{ field }}
+                                            <small>{{ field.help_text }}</small>
+                                            <small><font color="red"><b>{{ field.errors }}</b></font></small>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                        <ul class="list-inline wizard mb-0">
+                            <div class="list-inline-item float-right">
+                                <button class="btn btn-success btn-block width-lg" id="btn-login" type="submit"> Salvar </button>
                             </div>
-                        {% endfor %}
-                    </div> <!-- end col -->
-                </div> <!-- end row -->
-                <ul class="list-inline wizard mb-0">
-                    <div class="list-inline-item float-right">
-                        <button class="btn btn-success btn-block width-lg" id="btn-login" type="submit"> Salvar </button>
-                    </div>
-                </ul>
-            </form>
+                        </ul>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
-{% block styles %}
-    <link href="{% static 'libs/select2/select2.min.css' %}" rel="stylesheet" type="text/css"/>
-{% endblock %}
+
 {% block scripts %}
     <!-- Datatables -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="{% static 'libs/select2/select2.min.js' %}" defer></script>
+    <script src="{% static 'libs/jquery-mask-plugin/jquery.mask.min.js' %}"></script>
+
     {{ form.media.js }}
+    <script>
+        $('[data-toggle="input-mask"]').each(function (idx, obj) {
+            var maskFormat = $(obj).data("maskFormat");
+            var reverse = $(obj).data("reverse");
+            if (reverse != null)
+                $(obj).mask(maskFormat, {'reverse': reverse});
+            else
+                $(obj).mask(maskFormat);
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function limpa_formulario_cep() {
+                // Limpa valores do formulário de cep.
+                $("#id_logradouro").val("");
+                $("#id_bairro").val("");
+                $("#id_municipio").val("");
+            }
+
+            $("#id_cep").on('input', function () {
+                //Nova variável "cep" somente com dígitos.
+                var cep = $(this).val().replace(/\D/g, '');
+
+                //Verifica se campo cep possui valor informado.
+                if (cep != "") {
+                    //Expressão regular para validar o CEP.
+                    var validacep = /^[0-9]{8}$/;
+
+                    //Valida o formato do CEP.
+                    if (($(this).val().length === 9) & validacep.test(cep)) {
+                        //Preenche os campos com "..." enquanto consulta webservice.
+                        $("#id_logradouro").val("...")
+                        $("#id_bairro").val("...")
+
+                        //Consulta o webservice viacep.com.br/
+                        $.getJSON("//viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
+                            if (!("erro" in dados)) {
+                                //Atualiza os campos com os valores da consulta.
+                                $("#id_logradouro").val(dados.logradouro);
+                                if(dados.logradouro)
+                                    $('#id_logradouro').prop('readonly', true);
+                                else
+                                    $('#id_logradouro').prop('readonly', false);
+                                $("#id_bairro").val(dados.bairro);
+                                if(dados.bairro)
+                                    $('#id_bairro').prop('readonly', true);
+                                else
+                                    $('#id_bairro').prop('readonly', false);
+                                $("#id_municipio").val(dados.localidade);
+
+                                var id = null
+                                var ibge = dados.ibge.slice(0, 6)
+                                $.getJSON('/gestao/municipio/' + ibge, function(data){
+                                    id = data.id
+
+                                    $('#id_municipio').val(id).select2('trigger', 'select', {
+                                        data: {
+                                            id: id,
+                                            text: dados.localidade.toUpperCase() + " / " + dados.uf
+                                        }
+                                    });
+
+                                    if (dados.logradouro) {
+                                        $('#id_numero').focus();
+                                    } else {
+                                        $('#id_logradouro').focus()
+                                    }
+                                })
+                            } else {
+                                //CEP pesquisado não foi encontrado.
+                                limpa_formulario_cep();
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } else if ($(this).val().length === 9) {
+                        //cep é inválido.
+                        limpa_formulario_cep();
+                        alert("Formato de CEP inválido.");
+                    }
+                } else {
+                    //cep sem valor, limpa formulário.
+                    limpa_formulario_cep();
+                }
+            });
+        });
+    </script>
 {% endblock %}

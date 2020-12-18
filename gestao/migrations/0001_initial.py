@@ -54,8 +54,8 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'verbose_name': 'Integrante da SESAP',
-                'verbose_name_plural': 'Integrantes da SESAP',
+                'verbose_name': 'Pessoa Fisica',
+                'verbose_name_plural': 'Pessoas Fisicas',
             },
         ),
         migrations.CreateModel(

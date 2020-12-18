@@ -151,11 +151,13 @@ SOCIAL_AUTH_SABIA_SECRET=env('SOCIAL_AUTH_SABIA_SECRET')
 SOCIAL_AUTH_SABIA_EXTRA_DATA = [  # add this
     ('avatar', 'avatar'),
 ]
-DATABASES = {
-    # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
-    'default': env.db(),
-}
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
 try:
     from .local_settings import *
 except:
-    pass
+    DATABASES = {
+        # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
+        'default': env.db(),
+    }
