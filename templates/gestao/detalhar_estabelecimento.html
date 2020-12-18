@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+    <link href="{% static 'libs/datatables/dataTables.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables/responsive.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/datatables/buttons.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'libs/jquery-toast/jquery.toast.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="page-title">{{estabelecimento.nome}} ({{estabelecimento.cnes}})</h4>
+
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Gestão</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'gestao:estabelecimentos' %}">Estabelecimentos</a></li>
+                        <li class="breadcrumb-item active">{{estabelecimento.nome|title}}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
+            <a href="{% url 'gestao:editar_estabelecimento' estabelecimento.pk %}" class="btn btn-block btn-primary pull-right">Editar Estabelecimento</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Dados Cadastrais</h4>
+                </div>
+                            
+                <div class="card-body">    
+                    <table class="table table-striped dt-responsive nowrap">
+                        <tr>
+                            <th data-priority="1">CNES</th>
+                            <td>{{estabelecimento.cnes}}</td>
+                        </tr>
+                    
+                        <tr>
+                            <th data-priority="1">Nome</th>
+                            <td>{{estabelecimento.nome}}</td>
+                        </tr>
+                    
+                        <tr>
+                            <th data-priority="1">Contato</th>
+                            <td>{{estabelecimento.telefone}}</td>
+                        </tr>
+                    
+                        <tr>
+                            <th data-priority="1">Endereço</th>
+                            <td>{{estabelecimento.get_endereco}}</td>
+                        </tr>
+                    </table>
+                </div> <!-- end card body-->
+            </div> <!-- end card -->
+        </div><!-- end col-->
+    </div>
+
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
+            <a href="#" class="btn btn-block btn-success pull-right">Adicionar Profissional</a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Profissionais</h4>
+                </div>
+                            
+                <div class="card-body">    
+                    <table id="tabela-prestadores" class="table table-striped dt-responsive nowrap">
+                        <thead>
+                            <tr>
+                                <th data-priority="1">#</th>
+                                <th data-priority="1">Estabelecimento</th>
+                                <th data-priority="1">CNES</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr id="{{estabelecimento.estabelecimento__id}}">
+                                <td>{{estabelecimento.id}}</td>
+                                <td>{{estabelecimento.nome }}</td>
+                                <td>{{estabelecimento.cnes }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> <!-- end card body-->
+            </div> <!-- end card -->
+        </div><!-- end col-->
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'libs/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/dataTables.bootstrap4.js' %}"></script>
+    <script src="{% static 'libs/datatables/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/buttons.flash.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/buttons.print.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/dataTables.keyTable.min.js' %}"></script>
+    <script src="{% static 'libs/datatables/dataTables.select.min.js' %}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/1.10.20/sorting/datetime-moment.js"></script>
+    <script>
+        $(document).ready(function() {
+            //Buttons examples
+            $('#tabela-prestadores').DataTable({
+                "lengthMenu": [6, 12, 24, 48],
+                "pageLength": 6,
+                "language": {
+                    "paginate": {
+                        "previous": "<i class='mdi mdi-chevron-left'>",
+                        "next": "<i class='mdi mdi-chevron-right'>"
+                    },
+                    "search": "Buscar:",
+                    "info": "Exibindo registros de _START_ a _END_ para um total _TOTAL_ registros",
+                    "emptyTable": "Nenhum registro encontrado",
+                    "infoEmpty": "",
+                    "loadingRecords": "Carregando fila...",
+                    "processing": "Buscando registros...",
+                    "zeroRecords": "Nenhum registro encontrado",
+                    "lengthMenu": "Exibindo até _MENU_ registros por página"
+                },
+                "drawCallback": function () {
+                    $('.dataTables_paginate > .pagination').addClass('pagination-rounded');
+                }
+            });
+        });
+    </script>
+{% endblock %}

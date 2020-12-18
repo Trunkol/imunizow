@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block body %}
+<h2>{{ title }}</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            {% if form.non_field_errors  %}
+                <div class="alert alert-danger">
+                    Por favor, corrija o(s) erro(s) à seguir: <br/><br/>
+                    <strong>{{ form.non_field_errors }}</strong>
+                </div>
+            {% endif %}
+            <form action="." method="post" id="login-form" class="parsley-form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        {% for field in form %}
+                            <div class="form-group row mb-3">
+                                <label class="col-md-3 col-form-label" for="cns"> {{ field.label }}</label>
+                                <div class="col-md-9">
+                                    {{ field }}
+                                    <small>{{ field.help_text }}</small>
+                                    <small><font color="red"><b>{{ field.errors }}</b></font></small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+                <ul class="list-inline wizard mb-0">
+                    <div class="list-inline-item float-right">
+                        <button class="btn btn-success btn-block width-lg" id="btn-login" type="submit"> Salvar </button>
+                    </div>
+                </ul>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block styles %}
+    <link href="{% static 'libs/select2/select2.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block scripts %}
+    <!-- Datatables -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="{% static 'libs/select2/select2.min.js' %}" defer></script>
+    {{ form.media.js }}
+{% endblock %}
