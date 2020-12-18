@@ -158,5 +158,7 @@ SOCIAL_AUTH_SABIA_SECRET=env('SOCIAL_AUTH_SABIA_SECRET')
 SOCIAL_AUTH_SABIA_EXTRA_DATA = [  # add this
     ('avatar', 'avatar'),
 ]
-
-from .local_settings import *
+try:
+    from .local_settings import *
+except:
+    pass
