@@ -9,7 +9,7 @@ from django.db import transaction
 from django.contrib.auth.models import User
 
 from gestao.models import Estabelecimento, Municipio, Estado, \
-                            ProfissionalSaude
+                            ProfissionalSaude, CoordenadorSus
 
 # Create your views here.
 def estabelecimentos(request):
@@ -86,7 +86,27 @@ def habilitar_profissional(request, estabelecimento_pk, profissional_pk):
     
     return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(estabelecimento_pk,) ))
 
-
 def busca_municipio(request, ibge):
     id = Municipio.objects.filter(codigo=ibge).values('id')[0]
     return JsonResponse(id)
+
+def coordenadores_sus(request):
+    title = 'Coordenadores SUS'
+    coordenadores_sus = CoordenadorSus.objects.all()
+    return render(request, 'gestao/coordenadores_sus.html', locals())
+
+@transaction.atomic    
+def adicionar_coordenador_sus(request):
+    title = 'Adicionar Coordenador SUS'
+    form = PessoaFisicaForm(request.POST or None)
+    if form.is_valid():
+        pessoa_fisica = form.save(commit=False)
+        user = User.objects.create_user(form.cleaned_data['cpf'].replace('-', '').replace('.', ''), 
+                                        pessoa_fisica.email, 
+                                        f'{pessoa_fisica.cpf}{pessoa_fisica.nome}')
+        pessoa_fisica.user = user
+        pessoa_fisica.save()
+        coordenador_sus = CoordenadorSus.objects.create(pessoa_fisica=pessoa_fisica, ativo=True)
+
+        return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
+    return render(request, 'gestao/form_base.html', locals())

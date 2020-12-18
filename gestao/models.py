@@ -156,3 +156,7 @@ class ProfissionalSaude(models.Model):
     
     class Meta:
         unique_together = ('pessoa_fisica', 'estabelecimento')
+
+class CoordenadorSus(models.Model):
+    pessoa_fisica = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
+    ativo = models.BooleanField(verbose_name=u'Ativo', default=True)

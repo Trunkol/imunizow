@@ -16,6 +16,9 @@ urlpatterns = [
         path('<int:estabelecimento_pk>/desabilitar_profissional/<int:profissional_pk>', views.desabilitar_profissional, name='desabilitar_profissional'),
         path('<int:estabelecimento_pk>/habilitar_profissional/<int:profissional_pk>', views.habilitar_profissional, name='habilitar_profissional'),
     ])),
-
     
+    path(r'coordenadores_sus/', include([
+        path('', views.coordenadores_sus, name='coordenadores_sus'),
+        path('adicionar/', views.adicionar_coordenador_sus, name='adicionar_coordenador_sus'),
+    ])),
 ]

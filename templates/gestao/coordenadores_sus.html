@@ -13,13 +13,12 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">{{estabelecimento.nome}} ({{estabelecimento.cnes}})</h4>
+                <h4 class="page-title">Coordenadores SUS</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Gestão</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'gestao:estabelecimentos' %}">Estabelecimentos</a></li>
-                        <li class="breadcrumb-item active">{{estabelecimento.nome|title}}</li>
+                        <li class="breadcrumb-item active">Coordenadores SUS</li>
                     </ol>
                 </div>
             </div>
@@ -27,74 +26,30 @@
     </div>
 
     <div class="row" style="padding-bottom: 10px;">
-        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
-            <a href="{% url 'gestao:editar_estabelecimento' estabelecimento.pk %}" class="btn btn-rounded btn-block btn-primary pull-right">Editar Estabelecimento</a>
+        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-9 col-lg-3">    
+            <a href="{% url 'gestao:adicionar_coordenador_sus' %}" class="btn btn-block btn-rounded btn-success pull-right">Cadastrar Coordenador SUS</a>
         </div>
     </div>
 
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4>Dados Cadastrais</h4>
-                </div>
-                            
-                <div class="card-body">    
-                    <table class="table table-striped dt-responsive nowrap">
-                        <tr>
-                            <th data-priority="1">CNES</th>
-                            <td>{{estabelecimento.cnes}}</td>
-                        </tr>
-                    
-                        <tr>
-                            <th data-priority="1">Nome</th>
-                            <td>{{estabelecimento.nome}}</td>
-                        </tr>
-                    
-                        <tr>
-                            <th data-priority="1">Contato</th>
-                            <td>{{estabelecimento.telefone|default:'-'}}</td>
-                        </tr>
-                    
-                        <tr>
-                            <th data-priority="1">Endereço</th>
-                            <td>{{estabelecimento.get_endereco}}</td>
-                        </tr>
-                    </table>
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-    </div>
-
-    <div class="row" style="padding-bottom: 10px;">
-        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
-            <a href="{% url 'gestao:adicionar_profissional' estabelecimento.pk %}" class="btn btn-rounded btn-block btn-success pull-right">Adicionar Profissional</a>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Profissionais</h4>
-                </div>
-                            
-                <div class="card-body">    
+                <div class="card-body">
                     <table id="tabela-prestadores" class="table table-striped dt-responsive nowrap">
                         <thead>
                             <tr>
-                                <th data-priority="1">#</th>
-                                <th data-priority="1">Estabelecimento</th>
-                                <th data-priority="1">Ativo</th>
-                                <th data-priority="1">Ações</th>
+                                <th data-priority="2">#</th>
+                                <th data-priority="3">Nome</th>
+                                <th data-priority="2">Ativo</th>
+                                <th data-priority="2">Ações</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for prof in profissionais_saude %}
-                                <tr id="{{estabelecimento.estabelecimento__id}}">
-                                    <td>{{prof.id}}</td>
-                                    <td>{{prof.pessoa_fisica.nome }}</td>
+                            {% for coord in coordenadores_sus %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{coord.pessoa_fisica.nome }}</td>
                                     <td>
                                         {% if prof.ativo %}
                                             <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Sim</span>
@@ -104,9 +59,9 @@
                                     </td>
                                     <td>
                                         {% if prof.ativo %}
-                                            <a class="btn btn-rounded btn-danger" href="{% url 'gestao:desabilitar_profissional' estabelecimento.pk prof.pk %}">Desabilitar</a>
+                                            <a class="btn btn-rounded btn-danger" href="">Desabilitar</a>
                                         {% else %}                                 
-                                            <a class="btn btn-rounded btn-success" href="{% url 'gestao:habilitar_profissional' estabelecimento.pk prof.pk %}">Habilitar</a>
+                                            <a class="btn btn-rounded btn-success" href="">Habilitar</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -138,7 +93,7 @@
             //Buttons examples
             $('#tabela-prestadores').DataTable({
                 "lengthMenu": [6, 12, 24, 48, 96],
-                "pageLength": 24,
+                "pageLength": 48,
                 "language": {
                     "paginate": {
                         "previous": "<i class='mdi mdi-chevron-left'>",

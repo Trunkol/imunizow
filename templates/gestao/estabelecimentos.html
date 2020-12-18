@@ -61,7 +61,9 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-rounded btn-primary" href="{% url 'gestao:detalhar_estabelecimento' estabelecimento.pk %}">Detalhar</a>
-                                        <a class="btn btn-rounded btn-info" href="{% url 'gestao:habilitar_prestador' estabelecimento.pk %}">Habilitar Prestador</a>
+                                        {% if not estabelecimento.prestador %}
+                                            <a class="btn btn-rounded btn-info" href="{% url 'gestao:habilitar_prestador' estabelecimento.pk %}">Habilitar Prestador</a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -91,8 +93,8 @@
         $(document).ready(function() {
             //Buttons examples
             $('#tabela-prestadores').DataTable({
-                "lengthMenu": [6, 12, 24, 48],
-                "pageLength": 6,
+                "lengthMenu": [6, 12, 24, 48, 96],
+                "pageLength": 48,
                 "language": {
                     "paginate": {
                         "previous": "<i class='mdi mdi-chevron-left'>",
