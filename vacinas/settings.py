@@ -25,7 +25,7 @@ SECRET_KEY = 'ha5^(ikur5v*fms0h9b(cqv_-j9=es#oid@g$k^u0u#tu#8w6$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'imunizow.herokuapp.com']
 
 
 # Application definition
