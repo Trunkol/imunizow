@@ -1,5 +1,5 @@
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from gestao.models import PessoaFisica
 
 def save_pessoa_fisica(backend, user, response, *args, **kwargs):

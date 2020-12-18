@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
 from django.shortcuts import render
 from gestao.forms import EstabelecimentoForm, PessoaFisicaForm
+from django.http import HttpResponseRedirect, JsonResponse
 from django.db import transaction
+from django.urls import reverse
 from django.contrib.auth.models import User
 
 from gestao.models import Estabelecimento, Municipio, Estado, \
@@ -90,12 +91,13 @@ def busca_municipio(request, ibge):
     id = Municipio.objects.filter(codigo=ibge).values('id')[0]
     return JsonResponse(id)
 
+
 def coordenadores_sus(request):
     title = 'Coordenadores SUS'
     coordenadores_sus = CoordenadorSus.objects.all()
     return render(request, 'gestao/coordenadores_sus.html', locals())
 
-@transaction.atomic    
+
 def adicionar_coordenador_sus(request):
     title = 'Adicionar Coordenador SUS'
     form = PessoaFisicaForm(request.POST or None)
@@ -110,3 +112,35 @@ def adicionar_coordenador_sus(request):
 
         return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
     return render(request, 'gestao/form_base.html', locals())
+
+
+def desabilitar_coordenador(request, coordenador_pk):
+    try:
+       coord_sus = CoordenadorSus.objects.get(id=coordenador_pk)
+    except CoordenadorSus.DoesNotExist:
+        return HttpResponse(status=404)
+
+    coord_sus.ativo = False
+    coord_sus.save()
+    
+    return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
+
+
+def habilitar_coordenador(request, coordenador_pk):
+    try:
+       coord_sus = CoordenadorSus.objects.get(id=coordenador_pk)
+    except CoordenadorSus.DoesNotExist:
+        return HttpResponse(status=404)
+
+    coord_sus.ativo = True
+    coord_sus.save()
+    
+    return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
+
+def dashboard(request):
+    return render(request, 'dashboard.html', locals())
+
+@login_required
+def sair(request):
+    logout(request)
+    return HttpResponseRedirect('/')

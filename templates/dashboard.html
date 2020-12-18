@@ -13,65 +13,18 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Coordenadores SUS</h4>
+                <h4 class="page-title">Dashboard</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Gestão</a></li>
-                        <li class="breadcrumb-item active">Coordenadores SUS</li>
+                        <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row" style="padding-bottom: 10px;">
-        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-9 col-lg-3">    
-            <a href="{% url 'gestao:adicionar_coordenador_sus' %}" class="btn btn-block btn-rounded btn-success pull-right">Cadastrar Coordenador SUS</a>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <table id="tabela-prestadores" class="table table-striped dt-responsive nowrap">
-                        <thead>
-                            <tr>
-                                <th data-priority="2">#</th>
-                                <th data-priority="3">Nome</th>
-                                <th data-priority="2">Ativo</th>
-                                <th data-priority="2">Ações</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for coord in coordenadores_sus %}
-                                <tr>
-                                    <td>{{ forloop.counter }}</td>
-                                    <td>{{coord.pessoa_fisica.nome }}</td>
-                                    <td>
-                                        {% if coord.ativo %}
-                                            <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Sim</span>
-                                        {% else %}                                 
-                                            <span class="btn btn-danger btn-rounded width-sm waves-effect waves-light">Não</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if coord.ativo %}
-                                            <a class="btn btn-rounded btn-danger" href="{% url 'gestao:desabilitar_coordenador' coord.pk %}">Desabilitar</a>
-                                        {% else %}                                 
-                                            <a class="btn btn-rounded btn-success" href="{% url 'gestao:habilitar_coordenador' coord.pk %}">Habilitar</a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-    </div>
+    {{user}}
 {% endblock %}
 
 {% block scripts %}
@@ -93,7 +46,7 @@
             //Buttons examples
             $('#tabela-prestadores').DataTable({
                 "lengthMenu": [6, 12, 24, 48, 96],
-                "pageLength": 48,
+                "pageLength": 24,
                 "language": {
                     "paginate": {
                         "previous": "<i class='mdi mdi-chevron-left'>",

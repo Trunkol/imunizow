@@ -1,0 +1,64 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Log in | Adminto - Responsive Bootstrap 4 Admin Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+        <meta content="Coderthemes" name="author" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+        <!-- Bootstrap Css -->
+        <link href="{% static 'css/bootstrap.min.css' %}" id="bootstrap-stylesheet" rel="stylesheet" type="text/css" />
+        <!-- Icons Css -->
+        <link href="{% static 'css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+        <!-- App Css-->
+        <link href="{% static 'css/app.min.css' %}" id="app-stylesheet" rel="stylesheet" type="text/css" />
+
+    </head>
+
+    <body>
+        <div class="account-pages mt-5 mb-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="text-center">
+                            <h2>
+                                IMUNIZOW
+                            </h2>
+                            <p class="text-muted mt-2 mb-4">Seu cartão de vacina digital</p>
+                        </div>
+                        <div class="card">
+
+                            <div class="card-body p-4">
+                                <div class="text-center mb-4">
+                                    <h4 class="text-uppercase mt-0">Entrar</h4>
+                                </div>
+
+                                <br><center><div style="width:90%;"><button onclick="window.location.href = '{% url 'social:begin' 'sabia' %}' ;" class="btn btn-primary btn-block" id="btn-login">Entrar com o Sabiá<img class="ml-3" style="width: 10%; height: 100%; vertical-align: middle;" src="{% static 'images/logos/sabia.png' %}"></button></div>
+                            </div> <!-- end card-body -->
+                        </div>
+                        <!-- end card -->
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end page -->
+    
+
+        <!-- Vendor js -->
+        <script src="{% static 'js/vendor.min.js' %}"></script>
+
+        <!-- App js -->
+        <script src="{% static 'js/app.min.js' %}"></script>
+        
+    </body>
+</html>
+                            
+                            

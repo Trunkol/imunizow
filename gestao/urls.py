@@ -4,6 +4,8 @@ from gestao import views
 app_name = 'gestao'
 
 urlpatterns = [
+    path('sair/', views.sair, name='sair'),
+    path('dashboard', views.dashboard, name='dashboard'),
     path('municipio/<ibge>', views.busca_municipio),
 
     path(r'estabelecimentos/', include([
@@ -20,5 +22,8 @@ urlpatterns = [
     path(r'coordenadores_sus/', include([
         path('', views.coordenadores_sus, name='coordenadores_sus'),
         path('adicionar/', views.adicionar_coordenador_sus, name='adicionar_coordenador_sus'),
+        path('desabilitar_coordenador/<int:coordenador_pk>', views.desabilitar_coordenador, name='desabilitar_coordenador'),
+        path('habilitar_coordenador/<int:coordenador_pk>', views.habilitar_coordenador, name='habilitar_coordenador'),        
+
     ])),
 ]

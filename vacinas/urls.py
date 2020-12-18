@@ -15,9 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf.urls import url
+from django.conf.urls.static import static
+from django.conf import settings
+from django.views.static import serve
+from django.contrib.auth import views as auth_views
+from vacinas import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('gestao/', include('gestao.urls')),
+    path('', include('social_django.urls', namespace='social')),
     path("select2/", include("django_select2.urls")),
-]
+    path('', views.index),
+    path('accounts/login/', auth_views.LoginView.as_view()),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += [ url(r'^media/(?P<path>.*)$', serve, { 'document_root': settings.MEDIA_ROOT, }), url(r'^static/(?P<path>.*)$', serve, { 'document_root': settings.STATIC_ROOT }), ]
