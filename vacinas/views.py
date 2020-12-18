@@ -8,11 +8,12 @@ from django.shortcuts import redirect
 def index(request):
     pessoa_fisica = PessoaFisica.objects.filter(user=request.user).first()
 
+    return redirect('agenda:autocadastro')
+    
     if any((CoordenadorSus.objects.filter(pessoa_fisica=pessoa_fisica, ativo=True).exists(),
             ProfissionalSaude.objects.filter(pessoa_fisica=pessoa_fisica, ativo=True).exists())):
         return redirect('gestao:dashboard')
 
     if Paciente.objects.filter(pessoa_fisica=pessoa_fisica).exists():
         return redirect('agenda:index')
-
-    raise PermissionDenied
+    

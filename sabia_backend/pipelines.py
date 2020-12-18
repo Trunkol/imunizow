@@ -5,6 +5,9 @@ from gestao.models import PessoaFisica
 def save_pessoa_fisica(backend, user, response, *args, **kwargs):
 	if backend.name == 'sabia':
 		cpf = response.get('cpf')
+		
+		kwargs['request'].session['foto_usuario'] = response.get('avatar', None)
+
 		if not PessoaFisica.objects.filter(cpf=cpf).exists():
 			pessoa_fisica = PessoaFisica()
 			pessoa_fisica.nome = response.get('name')

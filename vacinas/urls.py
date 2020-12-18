@@ -21,9 +21,11 @@ from django.conf import settings
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
 from vacinas import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('gestao/', include('gestao.urls')),
+    path('agenda/', include('agenda.urls')),
     path('', include('social_django.urls', namespace='social')),
     path("select2/", include("django_select2.urls")),
     path('', views.index),

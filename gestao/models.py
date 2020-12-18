@@ -22,14 +22,14 @@ class PessoaFisica(models.Model):
     SEXO_FEMININO = u'F'
     SEXO_NAO_INFORMADO = u'N'
     SEXO_CHOICES = (
-                    (SEXO_MASCULINO, u'Masculino'),
-                    (SEXO_FEMININO, u'Feminino'),
-                    (SEXO_NAO_INFORMADO, u'Não Informado')
+                        (SEXO_MASCULINO, u'Masculino'),
+                        (SEXO_FEMININO, u'Feminino'),
+                        (SEXO_NAO_INFORMADO, u'Não Informado')
                     )
     SEXO_FORM_CHOICES = (
-                    ('', ''),
-                    (SEXO_MASCULINO, u'Masculino'),
-                    (SEXO_FEMININO, u'Feminino'),
+                        ('', ''),
+                        (SEXO_MASCULINO, u'Masculino'),
+                        (SEXO_FEMININO, u'Feminino'),
                     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     nome = models.CharField(max_length=255)
