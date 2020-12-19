@@ -13,55 +13,72 @@ from gestao.models import Estabelecimento, Municipio, Estado, \
 from agenda.models import Campanha
 
 # Create your views here.
+@login_required
 def estabelecimentos(request):
-    estabelecimentos = Estabelecimento.objects.all()
-    return render(request, 'gestao/estabelecimentos.html', locals())
+    if request.user.eh_coordenador_sus():
+        estabelecimentos = Estabelecimento.objects.all()
+        return render(request, 'gestao/estabelecimentos.html', locals())
+    raise PermissionDenied
 
+@login_required
 def detalhar_estabelecimento(request, pk):
     estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
     profissionais_saude = ProfissionalSaude.objects.filter(estabelecimento=estabelecimento).only('pessoa_fisica')
     return render(request, 'gestao/detalhar_estabelecimento.html', locals())
 
+@login_required
 def editar_estabelecimento(request, pk):
-    title = 'Editar Estabelecimento'
-    estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
-    form = EstabelecimentoForm(request.POST or None, instance=estabelecimento)
-    if form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(pk,) ))
-    return render(request, 'gestao/form_base.html', locals())
+    if request.user.eh_coordenador_sus():
+        title = 'Editar Estabelecimento'
+        estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+        form = EstabelecimentoForm(request.POST or None, instance=estabelecimento)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(pk,) ))
+        return render(request, 'gestao/form_base.html', locals())
 
+    raise PermissionDenied
+
+@login_required
 def cadastrar_estabelecimento(request):
-    title = 'Cadastrar Estabelecimento'
-    form = EstabelecimentoForm(request.POST or None)
-    if form.is_valid():
-        obj = form.save()
-        return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(obj.pk,) ))
-    return render(request, 'gestao/form_base.html', locals())
+    if request.user.eh_coordenador_sus():
+        title = 'Cadastrar Estabelecimento'
+        form = EstabelecimentoForm(request.POST or None)
+        if form.is_valid():
+            obj = form.save()
+            return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(obj.pk,) ))
+        return render(request, 'gestao/form_base.html', locals())
 
+    raise PermissionDenied
+
+@login_required
 def habilitar_prestador(request, pk):
     estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
     estabelecimento.prestador = True
     estabelecimento.save()
     return HttpResponseRedirect(reverse('gestao:estabelecimentos'))
 
-@transaction.atomic    
+
+@transaction.atomic
 def adicionar_profissional(request, pk):
-    title = 'Adicionar Profissional'
-    estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
-    form = PessoaFisicaForm(request.POST or None)
-    if form.is_valid():
-        pessoa_fisica = form.save(commit=False)
-        user = User.objects.create_user(form.cleaned_data['cpf'].replace('-', '').replace('.', ''), 
-                                        pessoa_fisica.email, 
-                                        f'{pessoa_fisica.cpf}{pessoa_fisica.nome}')
-        pessoa_fisica.user = user
-        pessoa_fisica.save()
+    if request.user.eh_coordenador_sus():
+        title = 'Adicionar Profissional'
+        estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+        form = PessoaFisicaForm(request.POST or None)
+        if form.is_valid():
+            pessoa_fisica = form.save(commit=False)
+            user = User.objects.create_user(form.cleaned_data['cpf'].replace('-', '').replace('.', ''), 
+                                            pessoa_fisica.email, 
+                                            f'{pessoa_fisica.cpf}{pessoa_fisica.nome}')
+            pessoa_fisica.user = user
+            pessoa_fisica.save()
 
-        prof_saude = ProfissionalSaude.objects.create(pessoa_fisica=pessoa_fisica, estabelecimento=estabelecimento, ativo=True)
+            prof_saude = ProfissionalSaude.objects.create(pessoa_fisica=pessoa_fisica, estabelecimento=estabelecimento, ativo=True)
 
-        return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(pk,) ))
-    return render(request, 'gestao/form_base.html', locals())
+            return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(pk,) ))
+        return render(request, 'gestao/form_base.html', locals())
+
+    raise PermissionDenied
 
 @transaction.atomic
 def desabilitar_profissional(request, estabelecimento_pk, profissional_pk):
@@ -75,6 +92,7 @@ def desabilitar_profissional(request, estabelecimento_pk, profissional_pk):
     
     return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(estabelecimento_pk,) ))
 
+
 @transaction.atomic
 def habilitar_profissional(request, estabelecimento_pk, profissional_pk):
     try:
@@ -87,32 +105,36 @@ def habilitar_profissional(request, estabelecimento_pk, profissional_pk):
     
     return HttpResponseRedirect(reverse('gestao:detalhar_estabelecimento', args=(estabelecimento_pk,) ))
 
+
 def busca_municipio(request, ibge):
     id = Municipio.objects.filter(codigo=ibge).values('id')[0]
     return JsonResponse(id)
 
-
+@login_required
 def coordenadores_sus(request):
-    title = 'Coordenadores SUS'
-    coordenadores_sus = CoordenadorSus.objects.all()
-    return render(request, 'gestao/coordenadores_sus.html', locals())
+    if request.user.eh_coordenador_sus():
+        title = 'Coordenadores SUS'
+        coordenadores_sus = CoordenadorSus.objects.all()
+        return render(request, 'gestao/coordenadores_sus.html', locals())
+    raise PermissionDenied
 
-
+@login_required
 def adicionar_coordenador_sus(request):
-    title = 'Adicionar Coordenador SUS'
-    form = PessoaFisicaForm(request.POST or None)
-    if form.is_valid():
-        pessoa_fisica = form.save(commit=False)
-        user = User.objects.create_user(form.cleaned_data['cpf'].replace('-', '').replace('.', ''), 
-                                        pessoa_fisica.email, 
-                                        f'{pessoa_fisica.cpf}{pessoa_fisica.nome}')
-        pessoa_fisica.user = user
-        pessoa_fisica.save()
-        coordenador_sus = CoordenadorSus.objects.create(pessoa_fisica=pessoa_fisica, ativo=True)
+    if request.user.eh_coordenador_sus():
+        title = 'Adicionar Coordenador SUS'
+        form = PessoaFisicaForm(request.POST or None)
+        if form.is_valid():
+            pessoa_fisica = form.save(commit=False)
+            user = User.objects.create_user(form.cleaned_data['cpf'].replace('-', '').replace('.', ''), 
+                                            pessoa_fisica.email, 
+                                            f'{pessoa_fisica.cpf}{pessoa_fisica.nome}')
+            pessoa_fisica.user = user
+            pessoa_fisica.save()
+            coordenador_sus = CoordenadorSus.objects.create(pessoa_fisica=pessoa_fisica, ativo=True)
 
-        return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
-    return render(request, 'gestao/form_base.html', locals())
-
+            return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
+        return render(request, 'gestao/form_base.html', locals())
+    raise PermissionDenied
 
 def desabilitar_coordenador(request, coordenador_pk):
     try:
@@ -137,6 +159,7 @@ def habilitar_coordenador(request, coordenador_pk):
     
     return HttpResponseRedirect(reverse('gestao:coordenadores_sus'))
 
+@login_required
 def dashboard(request):
     return render(request, 'dashboard.html', locals())
 
@@ -145,24 +168,29 @@ def sair(request):
     logout(request)
     return HttpResponseRedirect('/')
 
+
 @login_required
 def gestao_vacinas(request, pk):
-    title = 'Gestão de Vacinas'
-    estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
-    campanhas = estabelecimento.campanha_set.all()
-    return render(request, 'gestao/estoque.html', locals())
+    if any((request.user.eh_coordenador_sus(), request.user.eh_profissional_saude())):
+        title = 'Gestão de Vacinas'
+        estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+        campanhas = estabelecimento.campanha_set.all()
+        return render(request, 'gestao/estoque.html', locals())
+    raise PermissionDenied
+
 
 @login_required
 def cadastrar_estoque(request, estabelecimento_pk, campanha_pk):
-    title = 'Gestão de Vacinas'
-    estabelecimento = get_object_or_404(Estabelecimento, pk=estabelecimento_pk)
-    campanha = get_object_or_404(Campanha, pk=campanha_pk)
-    form = EstoqueForm(request.POST or None, estabelecimento=estabelecimento, campanha=campanha)
-    if form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse('gestao:gestao_vacinas', args=(estabelecimento_pk,)))
-    return render(request, 'gestao/form_base.html', locals())
-
+    if any((request.user.eh_coordenador_sus(), request.user.eh_profissional_saude())):
+        title = 'Gestão de Vacinas'
+        estabelecimento = get_object_or_404(Estabelecimento, pk=estabelecimento_pk)
+        campanha = get_object_or_404(Campanha, pk=campanha_pk)
+        form = EstoqueForm(request.POST or None, estabelecimento=estabelecimento, campanha=campanha)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('gestao:gestao_vacinas', args=(estabelecimento_pk,)))
+        return render(request, 'gestao/form_base.html', locals())
+    raise PermissionDenied
 
 
 @login_required
