@@ -32,11 +32,17 @@
                             <p class="text-muted mt-2 mb-4">Seu cartão de vacina digital</p>
                         </div>
                         <div class="card">
-
                             <div class="card-body p-4">
                                 <div class="text-center mb-4">
                                     <h4 class="text-uppercase mt-0">Entrar</h4>
                                 </div>
+                                
+                                <form class="form-signin bg-white shadow p-4" method="post">{% csrf_token %}
+                                    
+                                    {{ form }}
+        
+                                    <button class="btn btn-lg btn-primary btn-block" type="submit">Entrar</button>
+                                </form>
 
                                 <div>
                                     <a href="{% url 'social:begin' 'sabia' %}" class="btn btn-primary btn-block" id="btn-login">Entrar com o Sabiá<img class="ml-3" style="width: 10%; height: 100%; vertical-align: middle;" src="{% static 'images/logos/sabia.png' %}"></a>

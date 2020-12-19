@@ -75,7 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'vacinas.wsgi.application'
-
+AUTH_USER_MODEL = 'gestao.User'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

@@ -1,19 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, JsonResponse
-from gestao.models import PessoaFisica, ProfissionalSaude, CoordenadorSus, Paciente
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 
 @login_required
 def index(request):
-    pessoa_fisica = PessoaFisica.objects.filter(user=request.user).first()
-
-    return redirect('agenda:autocadastro')
-    
-    if any((CoordenadorSus.objects.filter(pessoa_fisica=pessoa_fisica, ativo=True).exists(),
-            ProfissionalSaude.objects.filter(pessoa_fisica=pessoa_fisica, ativo=True).exists())):
+    if request.user.eh_coordenador_sus():
         return redirect('gestao:dashboard')
+    
+    if request.user.eh_profissional_saude():
+        return redirect('gestao:detalhes_estabelecimento', args=(1))
 
-    if Paciente.objects.filter(pessoa_fisica=pessoa_fisica).exists():
+    if request.user.eh_paciente():
         return redirect('agenda:index')
     
+    return redirect('agenda:autocadastro')

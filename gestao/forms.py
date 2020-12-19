@@ -13,7 +13,6 @@ class PessoaFisicaForm(forms.ModelForm):
     sexo = forms.ChoiceField(label='Sexo', choices=PessoaFisica.SEXO_FORM_CHOICES,  widget=Select2Widget(attrs={'class': "form-control", 'data-placeholder': 'Selecione o sexo'}))
     celulares = forms.CharField(label='Celular', required=False, widget=forms.TextInput(attrs={'placeholder': '(00) 00000-0000', 'class': "form-control", 'data-toggle': "input-mask", 'data-mask-format': "(00) 00000-0000"}))
     telefones = forms.CharField(label='Fixo', required=False, widget=forms.TextInput(attrs={'placeholder': '(00) 0000-0000', 'class': "form-control", 'data-toggle': "input-mask", 'data-mask-format': "(00) 0000-0000"}))
-
     cep = forms.CharField(label='CEP', max_length=10, required=False, widget=forms.TextInput(attrs={'placeholder': '00000-000', 'class': "form-control", 'data-toggle': "input-mask", 'data-mask-format': "00000-000"}))
     logradouro = forms.CharField(label='Logradouro', max_length=80, required=False, widget=forms.TextInput(attrs={'placeholder': 'logradouro', 'class': "form-control"}))
     numero = forms.CharField(label=u'Número', max_length=10, required=False, widget=forms.TextInput(attrs={'placeholder': '000', 'class': "form-control"}))
@@ -25,7 +24,7 @@ class PessoaFisicaForm(forms.ModelForm):
 
     class Meta:
         model = PessoaFisica
-        exclude = ('user',)
+        exclude = ('user',)    
 
 
 class EstabelecimentoForm(forms.ModelForm):

@@ -7,10 +7,8 @@ from gestao.forms import EstabelecimentoForm, PessoaFisicaForm
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.urls import reverse
-from django.contrib.auth.models import User
-
 from gestao.models import Estabelecimento, Municipio, Estado, \
-                            ProfissionalSaude, CoordenadorSus
+                            ProfissionalSaude, CoordenadorSus, User
 
 # Create your views here.
 def estabelecimentos(request):

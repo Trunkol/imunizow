@@ -1,6 +1,6 @@
 
-from django.contrib.auth.models import Group, User
-from gestao.models import PessoaFisica
+from django.contrib.auth.models import Group
+from gestao.models import PessoaFisica, User
 
 def save_pessoa_fisica(backend, user, response, *args, **kwargs):
 	if backend.name == 'sabia':

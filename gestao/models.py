@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 
 class Estado(models.Model):
     nome = models.CharField(u'Nome', max_length=80)
@@ -160,3 +160,22 @@ class ProfissionalSaude(models.Model):
 class CoordenadorSus(models.Model):
     pessoa_fisica = models.ForeignKey(PessoaFisica, on_delete=models.CASCADE)
     ativo = models.BooleanField(verbose_name=u'Ativo', default=True)
+
+class User(AbstractUser):
+    class Meta:
+        db_table = 'auth_user'
+
+    def eh_profissional_saude(self):
+        return ProfissionalSaude.objects.filter(pessoa_fisica__user=self).exists()
+    
+    def eh_coordenador_sus(self):
+        return CoordenadorSus.objects.filter(pessoa_fisica__user=self).exists()
+
+    def eh_paciente(self):
+        return Paciente.objects.filter(pessoa_fisica__user=self).exists()
+
+    def paciente(self):
+        if Paciente.objects.filter(pessoa_fisica__user=self).exists():
+            return Paciente.objects.filter(pessoa_fisica__user=self).first()
+        return None
+
