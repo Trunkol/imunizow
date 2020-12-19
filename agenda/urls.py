@@ -13,6 +13,4 @@ urlpatterns = [
         path('<int:pk>/editar/', views.editar_campanha, name='editar_campanha'),
         path('cadastrar/', views.cadastrar_campanha, name='cadastrar_campanha'),
     ])),
-    
-    
 ]

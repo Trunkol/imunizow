@@ -9,7 +9,7 @@ def index(request):
         return redirect('gestao:dashboard')
     
     if request.user.eh_profissional_saude():
-        return redirect('gestao:detalhes_estabelecimento', args=(1))
+        return redirect('gestao:detalhar_estabelecimento', pk=request.user.profissional_saude().estabelecimento.pk)
 
     if request.user.eh_paciente():
         return redirect('agenda:index')

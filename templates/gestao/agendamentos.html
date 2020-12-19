@@ -13,66 +13,18 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">{{estabelecimento.nome}} ({{estabelecimento.cnes}})</h4>
+                <h4 class="page-title">Agendamentos {{estabelecimento.nome}} ({{estabelecimento.cnes}})</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Gestão</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'gestao:estabelecimentos' %}">Estabelecimentos</a></li>
-                        <li class="breadcrumb-item active">{{estabelecimento.nome|title}}</li>
+                        <li class="breadcrumb-item active">Agendamentos</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row" style="padding-bottom: 10px;">
-        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
-            <a href="{% url 'gestao:editar_estabelecimento' estabelecimento.pk %}" class="btn btn-rounded btn-block btn-primary pull-right">Editar Estabelecimento</a>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Dados Cadastrais</h4>
-                </div>
-                            
-                <div class="card-body">    
-                    <table class="table table-striped dt-responsive nowrap">
-                        <tr>
-                            <th data-priority="1">CNES</th>
-                            <td>{{estabelecimento.cnes}}</td>
-                        </tr>
-                    
-                        <tr>
-                            <th data-priority="1">Nome</th>
-                            <td>{{estabelecimento.nome}}</td>
-                        </tr>
-                    
-                        <tr>
-                            <th data-priority="1">Contato</th>
-                            <td>{{estabelecimento.telefone|default:'-'}}</td>
-                        </tr>
-                    
-                        <tr>
-                            <th data-priority="1">Endereço</th>
-                            <td>{{estabelecimento.get_endereco}}</td>
-                        </tr>
-                    </table>
-                </div> <!-- end card body-->
-            </div> <!-- end card -->
-        </div><!-- end col-->
-    </div>
-
-    {% if user.eh_coordenador_sus %}
-        <div class="row" style="padding-bottom: 10px;">
-            <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-10 col-lg-2">    
-                <a href="{% url 'gestao:adicionar_profissional' estabelecimento.pk %}" class="btn btn-rounded btn-block btn-success pull-right">Adicionar Profissional</a>
-            </div>
-        </div>    
-    {% endif %}
 
     <div class="row">
         <div class="col-12">

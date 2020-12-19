@@ -4,11 +4,13 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render
 from gestao.forms import EstabelecimentoForm, PessoaFisicaForm
+from agenda.forms import EstoqueForm
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.urls import reverse
 from gestao.models import Estabelecimento, Municipio, Estado, \
                             ProfissionalSaude, CoordenadorSus, User
+from agenda.models import Campanha
 
 # Create your views here.
 def estabelecimentos(request):
@@ -142,3 +144,29 @@ def dashboard(request):
 def sair(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+@login_required
+def gestao_vacinas(request, pk):
+    title = 'Gestão de Vacinas'
+    estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+    campanhas = estabelecimento.campanha_set.all()
+    return render(request, 'gestao/estoque.html', locals())
+
+@login_required
+def cadastrar_estoque(request, estabelecimento_pk, campanha_pk):
+    title = 'Gestão de Vacinas'
+    estabelecimento = get_object_or_404(Estabelecimento, pk=estabelecimento_pk)
+    campanha = get_object_or_404(Campanha, pk=campanha_pk)
+    form = EstoqueForm(request.POST or None, estabelecimento=estabelecimento, campanha=campanha)
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse('gestao:gestao_vacinas', args=(estabelecimento_pk,)))
+    return render(request, 'gestao/form_base.html', locals())
+
+
+
+@login_required
+def agendamentos(request, pk):
+    title = 'Agendamentos'
+    estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+    return render(request, 'gestao/agendamentos.html', locals())

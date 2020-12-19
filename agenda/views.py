@@ -69,3 +69,11 @@ def cadastrar_campanha(request):
         return HttpResponseRedirect(reverse('agenda:campanhas'))
     return render(request, 'gestao/form_base.html', locals())
 
+@login_required
+def cadastrar_campanha(request):
+    title = 'Campanhas'
+    form = CampanhaForm(data=request.POST or None)
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse('agenda:campanhas'))
+    return render(request, 'gestao/form_base.html', locals())

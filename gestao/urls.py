@@ -17,6 +17,9 @@ urlpatterns = [
         path('<int:pk>/adicionar_profissional/', views.adicionar_profissional, name='adicionar_profissional'),
         path('<int:estabelecimento_pk>/desabilitar_profissional/<int:profissional_pk>', views.desabilitar_profissional, name='desabilitar_profissional'),
         path('<int:estabelecimento_pk>/habilitar_profissional/<int:profissional_pk>', views.habilitar_profissional, name='habilitar_profissional'),
+        path('<int:pk>/gestao_vacinas', views.gestao_vacinas, name='gestao_vacinas'),
+        path('<int:estabelecimento_pk>/gestao_vacinas/cadastrar_estoque/<int:campanha_pk>/', views.cadastrar_estoque, name='cadastrar_estoque'),
+        path('<int:pk>/agendamentos', views.agendamentos, name='agendamentos'),
     ])),
     
     path(r'coordenadores_sus/', include([

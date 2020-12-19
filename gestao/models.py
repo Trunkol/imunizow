@@ -179,3 +179,7 @@ class User(AbstractUser):
             return Paciente.objects.filter(pessoa_fisica__user=self).first()
         return None
 
+    def profissional_saude(self):
+        if ProfissionalSaude.objects.filter(pessoa_fisica__user=self).exists():
+            return ProfissionalSaude.objects.filter(pessoa_fisica__user=self).first()
+
