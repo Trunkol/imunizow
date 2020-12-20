@@ -35,11 +35,11 @@ class EstoqueForm(forms.ModelForm):
     campanha = forms.ModelChoiceField(label='Campanha', queryset=Campanha.objects, required=False,
                                         widget=ModelSelect2Widget(model=Campanha, search_fields=['nome__icontains'],
                                         attrs={'class': "form-control", "data-minimum-input-length": "0", 
-                                                "data-placeholder": "Busque e selecione uma empresa"}))
+                                                "data-placeholder": "Busque e selecione uma campanha"}))
     estabelecimento = forms.ModelChoiceField(label='Estabelecimento', queryset=Estabelecimento.objects, required=False,
                                         widget=ModelSelect2Widget(model=Estabelecimento, search_fields=['nome__icontains'],
                                         attrs={'class': "form-control", "data-minimum-input-length": "0", 
-                                                "data-placeholder": "Busque e selecione uma empresa"}))
+                                                "data-placeholder": "Busque e selecione um estabelecimento"}))
     lote = forms.CharField(label='Lote de Vacinas', max_length=20, widget=forms.TextInput(attrs={'placeholder': 'código de Identificação do Lote', 'class': "form-control"}))
     
     class Meta:
@@ -121,4 +121,75 @@ class AgendamentoForm(forms.ModelForm):
         Agendamento.objects.bulk_create(agendamentos)
         
         
+class AgendarVacinacaoEstabelecimentoForm(forms.Form):
+    estabelecimento = forms.ModelChoiceField(label='Estabelecimento', queryset=Estabelecimento.objects, required=False,
+                                        widget=ModelSelect2Widget(model=Estabelecimento, search_fields=['nome__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione um estabelecimento"}))
+    campanha = forms.ModelChoiceField(label='Campanha', queryset=Campanha.objects, required=False,
+                                        widget=ModelSelect2Widget(model=Campanha, search_fields=['nome__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione uma campanha"}))
+    
+    def __init__(self, *args, **kwargs):
+        self.campanha = kwargs.pop('campanha', None)
+        super(AgendarVacinacaoEstabelecimentoForm, self).__init__(*args,**kwargs)
+    
+        if self.campanha:
+            self.fields['campanha'].initial = self.campanha
+            self.fields['campanha'].disabled = True
+            
+            estabelecimentos_com_agendamento = Agendamento.objects.filter(campanha=self.campanha, 
+                                                                            status=Agendamento.DISPONIVEL)\
+                                                                        .values_list('estabelecimento', flat=True)
+            id_estabs_disponiveis = set(estabelecimentos_com_agendamento)        
+            self.fields['estabelecimento'].queryset = Estabelecimento.objects.filter(pk__in=id_estabs_disponiveis)
 
+class AgendarVacinacaoDataForm(forms.Form):
+    data = forms.ChoiceField(label='Data de Vacinação', choices=[], widget=Select2Widget(attrs={'class': "form-control",
+                                                                                      "data-placeholder": "Selecione a data disponível"}))
+
+    campanha = forms.ModelChoiceField(label='Campanha', queryset=Campanha.objects, required=False,
+                                        widget=ModelSelect2Widget(model=Campanha, search_fields=['nome__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione uma empresa"}))
+    estabelecimento = forms.ModelChoiceField(label='Estabelecimento', queryset=Estabelecimento.objects, required=False,
+                                        widget=ModelSelect2Widget(model=Estabelecimento, search_fields=['nome__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione uma empresa"}))
+
+    def __init__(self, *args, **kwargs):
+        self.estabelecimento = kwargs.pop('estabelecimento', None)
+        self.campanha = kwargs.pop('campanha', None)
+        self.paciente = kwargs.pop('paciente', None)
+        super(AgendarVacinacaoDataForm, self).__init__(*args,**kwargs)
+        
+        if self.estabelecimento:
+            self.fields['estabelecimento'].initial = self.estabelecimento
+            self.fields['estabelecimento'].disabled = True
+        
+        if self.campanha:
+            self.fields['campanha'].initial = self.campanha
+            self.fields['campanha'].disabled = True
+
+        agendamentos = Agendamento.objects.filter(campanha=self.campanha, 
+                                                    status=Agendamento.DISPONIVEL, 
+                                                    estabelecimento=self.estabelecimento).order_by('data')\
+                                            .values_list('data', flat=True)
+        if agendamentos:
+            agendamentos = set(agendamentos)
+            data_agendamento_choices = []
+            for dia in agendamentos:
+                data_agendamento_choices.append((dia, dia.strftime('%d/%m/%Y')))
+            self.fields['data'].choices = set(data_agendamento_choices)
+
+    @transaction.atomic
+    def save(self):
+        self.data = self.cleaned_data.get('data')
+        agendamento = Agendamento.objects.filter(campanha=self.campanha, 
+                                            status=Agendamento.DISPONIVEL, 
+                                            estabelecimento=self.estabelecimento, 
+                                            data=self.data).order_by('pk').first()
+        agendamento.paciente = self.paciente
+        agendamento.status = Agendamento.OCUPADO
+        agendamento.save()

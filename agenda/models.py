@@ -29,7 +29,7 @@ class Campanha(models.Model):
     def agendamentos(self):
         if self.agendamento_set.exists():
            return self.agendamento_set.aggregate(total=Count('pk'))['total']
-        
+
 
 class Agendamento(models.Model):
     OCUPADO = 'Ocupado'
@@ -46,6 +46,8 @@ class Agendamento(models.Model):
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)
     campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE)
 
+    def get_lugar_fila(self):
+        pass
 
 class Estoque(models.Model):
     quantidade = models.IntegerField('Quantidade de Vacinas')

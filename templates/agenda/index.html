@@ -7,7 +7,7 @@
     <link href="{% static 'css/icons.min.css' %}" rel="stylesheet" type="text/css" />
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.3.0/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.3.0/main.min.js'></script>  
-    <link rel="stylesheet" href="{% static 'libs/sweet-alert2/sweetalert2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'libs/sweetalert2/sweetalert2.min.css' %}">
 {% endblock %}
 
 {% block body %}
@@ -56,7 +56,7 @@
                                 <tr>
                                     <td>{{campanha.titulo}}</td>
                                     <td>
-                                        <a href="" class="btn btn-success">Agendar</a>
+                                        <a href="{% url 'agenda:agendar_vacinacao_estabelecimento' campanha.pk %}" class="btn btn-success">Agendar</a>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -70,7 +70,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="{% static 'libs/sweet-alert2/sweetalert2.min.js' %}"></script>
+    <script src="{% static 'libs/sweetalert2/sweetalert2.min.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -79,20 +79,27 @@
                 locale: 'pt-br',
                 validRange: {
                     start: '2019-12-15',
-                    end: new Date()
+                    //end: new Date()
                 },
                 events: [
-                    {
-                        title: 'BCH237',
-                        start: '2020-12-12T10:30:00',
-                        extendedProps: {
-                            department: 'BioChemistry'
+                    {% for vac in minhas_vacinas %}
+                        {
+                            title: '{{vac.campanha.titulo}}',
+                            start: '{{vac.data|date:"Y-m-d"}}',
+                            extendedProps: {
+                                estabelecimento: '{{ vac.estabelecimento.nome }}',
+                                endereco: '{{ vac.estabelecimento.get_endereco }}'
+                            },
                         },
-                        description: 'Lecture'
-                    }
+                    {% endfor %}
                 ],
                 eventClick: function(info) {
-                    //ADICIONAR SWEET ALERT 
+                    Swal.fire(
+                        'Vacina a vista!',
+                        'Se dirija ao estabelecimento: '+info.event.extendedProps.estabelecimento+',\nno endereço: '+
+                        info.event.extendedProps.endereco,
+                        'success'
+                        )
                     info.el.style.borderColor = 'red';
                 },
             });
