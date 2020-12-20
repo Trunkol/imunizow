@@ -112,11 +112,15 @@
                     {% endif %}
                     
                     {% if user.eh_profissional_saude %}
+
                         <li class="has-submenu">
-                            <a href="index.html"><i class="mdi mdi-view-dashboard"></i>Agendamentos</a>
+                            <a href="{% url 'gestao:agendamentos' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-view-dashboard"></i>Agendamentos</a>
                         </li>    
                         <li class="has-submenu">
-                            <a href="index.html"><i class="mdi mdi-view-dashboard"></i>Gestão de Vacinas</a>
+                            <a href="{% url 'gestao:detalhar_estabelecimento' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-view-dashboard"></i>Meu Estabelecimento</a>
+                        </li>    
+                        <li class="has-submenu">
+                            <a href="{% url 'gestao:gestao_vacinas' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-view-dashboard"></i>Gestão de Vacinas</a>
                         </li>    
                     {% endif %}
                 </ul>

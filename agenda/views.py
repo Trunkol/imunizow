@@ -7,10 +7,12 @@ from gestao.models import Paciente, PessoaFisica, User
 from django.db import transaction
 from agenda.forms import CampanhaForm
 from agenda.models import Campanha
+from datetime import datetime, date
+
 # Create your views here.
 def index(request):
+    campanhas = Campanha.objects.filter(data_inicio__lte=date.today(), data_fim__gte=date.today())
     return render(request, 'agenda/index.html', locals())
-
 
 @login_required
 @transaction.atomic

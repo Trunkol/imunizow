@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render
 from gestao.forms import EstabelecimentoForm, PessoaFisicaForm
-from agenda.forms import EstoqueForm
+from agenda.forms import EstoqueForm, AgendamentoForm
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db import transaction
 from django.urls import reverse
@@ -197,4 +197,19 @@ def cadastrar_estoque(request, estabelecimento_pk, campanha_pk):
 def agendamentos(request, pk):
     title = 'Agendamentos'
     estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+    campanhas = estabelecimento.campanha_set.all()
     return render(request, 'gestao/agendamentos.html', locals())
+
+
+@login_required
+def cadastrar_agendamentos(request, estabelecimento_pk, campanha_pk):
+    if any((request.user.eh_coordenador_sus(), request.user.eh_profissional_saude())):
+        title = 'Cadastrar Agendamento'
+        estabelecimento = get_object_or_404(Estabelecimento, pk=estabelecimento_pk)    
+        campanha = get_object_or_404(Campanha, pk=campanha_pk)
+        form = AgendamentoForm(request.POST or None, estabelecimento=estabelecimento, campanha=campanha)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('gestao:agendamentos', args=(estabelecimento_pk,)))
+        return render(request, 'gestao/form_base.html', locals())
+    raise PermissionDenied

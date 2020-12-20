@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum, Max, Count
 from gestao.models import Estabelecimento, Paciente
 
 # Create your models here.
@@ -10,6 +11,25 @@ class Campanha(models.Model):
 
     def __str__(self):
         return self.titulo
+
+    def estoque_cadastrado(self):
+        if self.estoque_set.exists():
+            return self.estoque_set.aggregate(qtd=Sum('quantidade'))['qtd']
+    
+    def estoque_disponivel(self):
+        aplicadas = 0
+        if self.estoque_set.exists():
+            total_cadastrado = self.estoque_set.aggregate(qtd=Sum('quantidade'))['qtd']
+        
+        if self.agendamento_set.exists():
+            aplicadas = self.agendamento_set.filter(status=Agendamento.APLICADA).aggregate(total=Count('pk'))['total']
+
+        return (total_cadastrado - aplicadas)
+
+    def agendamentos(self):
+        if self.agendamento_set.exists():
+           return self.agendamento_set.aggregate(total=Count('pk'))['total']
+        
 
 class Agendamento(models.Model):
     OCUPADO = 'Ocupado'
@@ -31,6 +51,6 @@ class Estoque(models.Model):
     quantidade = models.IntegerField('Quantidade de Vacinas')
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)
     campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE)
-
+    lote = models.CharField('Lote', max_length=20, default=None, null=True)
 
 

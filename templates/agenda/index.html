@@ -52,12 +52,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Nome da Campanha</td>
-                                <td>
-                                    <a href="" class="btn btn-success">Agendar</a>
-                                </td>
-                            </tr>
+                            {% for campanha in campanhas %}
+                                <tr>
+                                    <td>{{campanha.titulo}}</td>
+                                    <td>
+                                        <a href="" class="btn btn-success">Agendar</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>

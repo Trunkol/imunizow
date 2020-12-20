@@ -20,6 +20,7 @@ urlpatterns = [
         path('<int:pk>/gestao_vacinas', views.gestao_vacinas, name='gestao_vacinas'),
         path('<int:estabelecimento_pk>/gestao_vacinas/cadastrar_estoque/<int:campanha_pk>/', views.cadastrar_estoque, name='cadastrar_estoque'),
         path('<int:pk>/agendamentos', views.agendamentos, name='agendamentos'),
+        path('<int:estabelecimento_pk>/agendamentos/cadastrar/<int:campanha_pk>/', views.cadastrar_agendamentos, name='cadastrar_agendamentos'),
     ])),
     
     path(r'coordenadores_sus/', include([

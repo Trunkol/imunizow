@@ -13,13 +13,13 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Agendamentos {{estabelecimento.nome}} ({{estabelecimento.cnes}})</h4>
+                <h4 class="page-title">{{title}} {{estabelecimento.nome}} ({{estabelecimento.cnes}})</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Gestão</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'gestao:estabelecimentos' %}">Estabelecimentos</a></li>
-                        <li class="breadcrumb-item active">Agendamentos</li>
+                        <li class="breadcrumb-item active">Estoque</li>
                     </ol>
                 </div>
             </div>
@@ -30,40 +30,32 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4>Profissionais</h4>
+                    <h4>Campanhas</h4>
                 </div>
                             
                 <div class="card-body">    
                     <table id="tabela-prestadores" class="table table-striped dt-responsive nowrap">
                         <thead>
                             <tr>
-                                <th data-priority="1">#</th>
-                                <th data-priority="1">Estabelecimento</th>
-                                <th data-priority="1">Ativo</th>
-                                <th data-priority="1">Ações</th>
+                                <th data-priority="2">#</th>
+                                <th data-priority="3">Título</th>
+                                <th data-priority="2">Data de Início</th>
+                                <th data-priority="2">Data de Fim</th>
+                                <th data-priority="2">Agendamentos</th>
+                                <th data-priority="2">Ações</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for prof in profissionais_saude %}
-                                <tr id="{{estabelecimento.estabelecimento__id}}">
-                                    <td>{{prof.id}}</td>
-                                    <td>{{prof.pessoa_fisica.nome }}</td>
+                            {% for campanha in campanhas %}
+                                <tr id="{{campanha.campanha__id}}">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ campanha.titulo }}</td>
+                                    <td>{{ campanha.data_inicio }}</td>
+                                    <td>{{ campanha.data_fim }}</td>
+                                    <td>{{ campanha.agendamentos|default:'-' }}</td>
                                     <td>
-                                        {% if prof.ativo %}
-                                            <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Sim</span>
-                                        {% else %}                                 
-                                            <span class="btn btn-danger btn-rounded width-sm waves-effect waves-light">Não</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if user.eh_coordenador_sus %}
-                                            {% if prof.ativo %}
-                                                <a class="btn btn-rounded btn-danger" href="{% url 'gestao:desabilitar_profissional' estabelecimento.pk prof.pk %}">Desabilitar</a>
-                                            {% else %}                                 
-                                                <a class="btn btn-rounded btn-success" href="{% url 'gestao:habilitar_profissional' estabelecimento.pk prof.pk %}">Habilitar</a>
-                                            {% endif %}
-                                        {% endif %}
+                                        <a href="{% url 'gestao:cadastrar_agendamentos' estabelecimento_pk=estabelecimento.pk campanha_pk=campanha.pk %}" class="btn btn-success btn-rounded">Adicionar Agendamentos</a>
                                     </td>
                                 </tr>
                             {% endfor %}

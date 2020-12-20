@@ -41,6 +41,8 @@
                                 <th data-priority="3">Título</th>
                                 <th data-priority="2">Data de Início</th>
                                 <th data-priority="2">Data de Fim</th>
+                                <th data-priority="2">Estoque Cadastrado</th>
+                                <th data-priority="2">Estoque Disponível</th>
                                 <th data-priority="2">Ações</th>
                             </tr>
                         </thead>
@@ -49,9 +51,11 @@
                             {% for campanha in campanhas %}
                                 <tr id="{{campanha.campanha__id}}">
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{campanha.titulo }}</td>
-                                    <td>{{campanha.data_inicio }}</td>
-                                    <td>{{campanha.data_fim }}</td>
+                                    <td>{{ campanha.titulo }}</td>
+                                    <td>{{ campanha.data_inicio }}</td>
+                                    <td>{{ campanha.data_fim }}</td>
+                                    <td>{{ campanha.estoque_cadastrado }}</td>
+                                    <td>{{ campanha.estoque_disponivel }}</td>
                                     <td>
                                         <a href="{% url 'gestao:cadastrar_estoque' estabelecimento_pk=estabelecimento.pk campanha_pk=campanha.pk %}" class="btn btn-success btn-rounded">Adicionar Estoque</a>
                                     </td>
