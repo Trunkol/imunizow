@@ -19,8 +19,9 @@ urlpatterns = [
         path('<int:estabelecimento_pk>/habilitar_profissional/<int:profissional_pk>', views.habilitar_profissional, name='habilitar_profissional'),
         path('<int:pk>/gestao_vacinas', views.gestao_vacinas, name='gestao_vacinas'),
         path('<int:estabelecimento_pk>/gestao_vacinas/cadastrar_estoque/<int:campanha_pk>/', views.cadastrar_estoque, name='cadastrar_estoque'),
-        path('<int:pk>/agendamentos', views.agendamentos, name='agendamentos'),
+        path('<int:pk>/campanhas/agendamentos', views.agendamentos, name='agendamentos'),
         path('<int:estabelecimento_pk>/agendamentos/cadastrar/<int:campanha_pk>/', views.cadastrar_agendamentos, name='cadastrar_agendamentos'),
+        path('<int:pk>/agendamentos', views.agendamentos_estabelecimento, name='agendamentos_estabelecimento'),
     ])),
     
     path(r'coordenadores_sus/', include([
@@ -28,6 +29,5 @@ urlpatterns = [
         path('adicionar/', views.adicionar_coordenador_sus, name='adicionar_coordenador_sus'),
         path('desabilitar_coordenador/<int:coordenador_pk>', views.desabilitar_coordenador, name='desabilitar_coordenador'),
         path('habilitar_coordenador/<int:coordenador_pk>', views.habilitar_coordenador, name='habilitar_coordenador'),        
-
     ])),
 ]

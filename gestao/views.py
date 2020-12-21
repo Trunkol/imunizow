@@ -10,7 +10,7 @@ from django.db import transaction
 from django.urls import reverse
 from gestao.models import Estabelecimento, Municipio, Estado, \
                             ProfissionalSaude, CoordenadorSus, User
-from agenda.models import Campanha
+from agenda.models import Campanha, Agendamento
 
 # Create your views here.
 @login_required
@@ -195,10 +195,17 @@ def cadastrar_estoque(request, estabelecimento_pk, campanha_pk):
 
 @login_required
 def agendamentos(request, pk):
-    title = 'Agendamentos'
+    title = 'Agendamentos por Campanha'
     estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
     campanhas = estabelecimento.campanha_set.all()
     return render(request, 'gestao/agendamentos.html', locals())
+
+@login_required
+def agendamentos_estabelecimento(request, pk):
+    title = 'Agendamentos'
+    estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
+    agendamentos = Agendamento.objects.filter(estabelecimento=estabelecimento, status=Agendamento.OCUPADO).order_by('pk')
+    return render(request, 'gestao/agendamentos_estabelecimento.html', locals())
 
 
 @login_required

@@ -14,21 +14,15 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Estabelecimentos</h4>
+                <h4 class="page-title">Agendamentos por Dia</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="javascript: void(0);">Gestão</a></li>
-                        <li class="breadcrumb-item active">Estabelecimentos</li>
+                        <li class="breadcrumb-item active">Agendamentos por Dia</li>
                     </ol>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="row" style="padding-bottom: 10px;">
-        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-9 col-lg-3">    
-            <a href="{% url 'gestao:cadastrar_estabelecimento' %}" class="btn btn-block btn-rounded btn-success pull-right">Cadastrar Estabelecimento</a>
         </div>
     </div>
 
@@ -40,31 +34,22 @@
                         <thead>
                             <tr>
                                 <th data-priority="2">#</th>
-                                <th data-priority="3">Estabelecimento</th>
-                                <th data-priority="2">CNES</th>
-                                <th data-priority="2">Prestador</th>
+                                <th data-priority="3">Data</th>
+                                <th data-priority="3">Paciente</th>
+                                <th data-priority="3">Campanha</th>
                                 <th data-priority="2">Ações</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for estabelecimento in estabelecimentos %}
+                            {% for agendamento in agendamentos %}
                                 <tr id="{{estabelecimento.estabelecimento__id}}">
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{estabelecimento.nome }}</td>
-                                    <td>{{estabelecimento.cnes }}</td>
+                                    <td>{{ agendamento.data|date:'d/m/Y' }}</td>
+                                    <td>{{ agendamento.paciente }}</td>
+                                    <td>{{ agendamento.campanha }}</td>
                                     <td>
-                                        {% if estabelecimento.prestador %}
-                                            <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Sim</span>
-                                        {% else %}                                 
-                                            <span class="btn btn-danger btn-rounded width-sm waves-effect waves-light">Não</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-rounded btn-primary" href="{% url 'gestao:detalhar_estabelecimento' estabelecimento.pk %}">Detalhar</a>
-                                        {% if not estabelecimento.prestador %}
-                                            <a class="btn btn-rounded btn-info" href="{% url 'gestao:habilitar_prestador' estabelecimento.pk %}">Habilitar Prestador</a>
-                                        {% endif %}
+                                        <a class="btn btn-rounded btn-success" href="{% url 'agenda:confirmar_vacinacao' agendamento.pk %}">Confirmar Aplicação</a>
                                     </td>
                                 </tr>
                             {% endfor %}

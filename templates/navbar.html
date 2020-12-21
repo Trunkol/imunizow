@@ -112,9 +112,21 @@
                     {% endif %}
                     
                     {% if user.eh_profissional_saude %}
+                        <li class="has-submenu">
+                            <a href="{% url 'gestao:agendamentos_estabelecimento' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-book-account"></i>Fila</a>
+                        </li>    
 
                         <li class="has-submenu">
-                            <a href="{% url 'gestao:agendamentos' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-view-dashboard"></i>Agendamentos</a>
+                            <a href="#"><i class="mdi mdi-view-dashboard"></i>Agendamentos</a>
+                            <ul class="submenu megamenu">
+                                <li>
+                                    <ul>
+                                        <li>
+                                            <a href="{% url 'gestao:agendamentos' user.profissional_saude.estabelecimento.pk %}">Cadastrar Agendamentos</a>
+                                        </li>                                        
+                                    </ul>
+                                </li>
+                            </ul>
                         </li>    
                         <li class="has-submenu">
                             <a href="{% url 'gestao:detalhar_estabelecimento' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-view-dashboard"></i>Meu Estabelecimento</a>

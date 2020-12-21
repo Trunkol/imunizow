@@ -30,6 +30,15 @@ class Campanha(models.Model):
         if self.agendamento_set.exists():
            return self.agendamento_set.aggregate(total=Count('pk'))['total']
 
+class Estoque(models.Model):
+    quantidade = models.IntegerField('Quantidade de Vacinas')
+    estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)
+    campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE)
+    lote = models.CharField('Lote', max_length=20, default=None, null=True)
+
+    def __str__(self):
+        return f'{self.campanha.titulo} (Lote: {self.lote})'
+
 
 class Agendamento(models.Model):
     OCUPADO = 'Ocupado'
@@ -45,14 +54,21 @@ class Agendamento(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)
     campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE)
+    estoque = models.ForeignKey(Estoque, on_delete=models.CASCADE, null=True)
+    data_aplicacao = models.DateTimeField(u'data_aplicacao', null=True)
 
-    def get_lugar_fila(self):
-        pass
 
-class Estoque(models.Model):
-    quantidade = models.IntegerField('Quantidade de Vacinas')
+class Vacina(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)
     campanha = models.ForeignKey(Campanha, on_delete=models.CASCADE)
-    lote = models.CharField('Lote', max_length=20, default=None, null=True)
+    estoque = models.ForeignKey(Estoque, on_delete=models.CASCADE, null=True)
+    agendamento = models.ForeignKey(Agendamento, on_delete=models.CASCADE, null=True)
 
-
+class VacinaPrivada(models.Model):
+    paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)
+    descricao = models.CharField('Descrição', max_length=255)
+    estabelecimento = models.CharField('Estabelecimento de Aplicação', max_length=255)
+    data_vacinacao = models.DateField(u'Data de vacinação', null=True)
+    lote = models.CharField('Estabelecimento de Aplicação', max_length=255)
+    

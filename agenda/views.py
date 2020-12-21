@@ -5,15 +5,19 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from gestao.models import Paciente, PessoaFisica, User, Estabelecimento
 from django.db import transaction
-from agenda.forms import CampanhaForm, AgendarVacinacaoEstabelecimentoForm, AgendarVacinacaoDataForm
+from agenda.forms import CampanhaForm, AgendarVacinacaoEstabelecimentoForm, \
+                         AgendarVacinacaoDataForm, ConfirmacaoVacinaForm
 from agenda.models import Campanha, Agendamento
 from datetime import datetime, date
-
+from django.core.mail import send_mail
+        
 @login_required
 def index(request):    
-    campanhas = Campanha.objects.filter(data_inicio__lte=date.today(), data_fim__gte=date.today())
     minhas_vacinas = Agendamento.objects.filter(paciente=request.user.paciente())
-
+    campanhas_ativas = Campanha.objects.filter(data_inicio__lte=date.today(), 
+                                                        data_fim__gte=date.today())
+    campanhas_sem_agendas = campanhas_ativas.exclude(pk__in=minhas_vacinas.values_list('campanha', flat=True))
+    
     return render(request, 'agenda/index.html', locals())
 
 @login_required
@@ -102,5 +106,28 @@ def agendar_vacinacao_data(request, campanha_pk, estabelecimento_pk):
                                      estabelecimento=estabelecimento, paciente=paciente)
     if form.is_valid():
         form.save()
+        #send_mail('[IMUNIZOW] Vacina Agendada', 'Here is the message.', 'from@example.com', ['to@example.com'], fail_silently=True)
         return HttpResponseRedirect(reverse('agenda:index'))
+    return render(request, 'gestao/form_base.html', locals())
+
+@login_required
+def fila(request, agendamento_pk):
+    title = 'Fila de Vacinação'
+    agendamento = get_object_or_404(Agendamento, pk=agendamento_pk)
+    campanha = get_object_or_404(Campanha, pk=agendamento.campanha.pk)
+    estabelecimento = get_object_or_404(Estabelecimento, pk=agendamento.estabelecimento.pk)
+    agendamentos = Agendamento.objects.filter(campanha=campanha, estabelecimento=estabelecimento, 
+                                                    data=agendamento.data, status=Agendamento.OCUPADO).order_by('pk')
+    return render(request, 'agenda/fila.html', locals())
+
+@login_required
+def confirmar_vacinacao(request, agendamento_pk):
+    title = 'Confirmar Vacinação'
+    agendamento = get_object_or_404(Agendamento, pk=agendamento_pk)
+    form = ConfirmacaoVacinaForm(data=request.POST or None, agendamento=agendamento)
+    if form.is_valid():
+        form.save()
+        #ProfissionalSaude.objects.filter(estabelecimento=agendamento.estabelecimento)
+        #send_mail('[IMUNIZOW] Vacina Aplicada', 'Here is the message.', 'from@example.com', ['to@example.com'], fail_silently=True)
+        return HttpResponseRedirect(reverse('gestao:agendamentos_estabelecimento', args=(agendamento.estabelecimento.pk,)))
     return render(request, 'gestao/form_base.html', locals())

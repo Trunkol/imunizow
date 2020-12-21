@@ -2,7 +2,7 @@ from django import forms
 from django.db import transaction
 from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
-from agenda.models import Campanha, Estoque, Agendamento
+from agenda.models import Campanha, Estoque, Agendamento, Vacina, VacinaPrivada
 from gestao.models import Estabelecimento
 import datetime
 
@@ -81,7 +81,7 @@ class AgendamentoForm(forms.ModelForm):
 
     class Meta:
         model = Agendamento
-        exclude = ('status', 'paciente')    
+        exclude = ('status', 'paciente', 'data_aplicacao', 'estoque')    
 
     def __init__(self, *args, **kwargs):
         self.estabelecimento = kwargs.pop('estabelecimento', None)
@@ -193,3 +193,41 @@ class AgendarVacinacaoDataForm(forms.Form):
         agendamento.paciente = self.paciente
         agendamento.status = Agendamento.OCUPADO
         agendamento.save()
+
+
+class ConfirmacaoVacinaForm(forms.Form):
+    estoque = forms.ModelChoiceField(label='Lote de Vacinação', queryset=Estoque.objects, required=True,
+                                        widget=ModelSelect2Widget(model=Estoque, search_fields=['lote__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione um lote"}))
+    campanha = forms.ModelChoiceField(label='Campanha', queryset=Campanha.objects,
+                                        widget=ModelSelect2Widget(model=Campanha, search_fields=['nome__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione uma empresa"}))
+    estabelecimento = forms.ModelChoiceField(label='Estabelecimento', queryset=Estabelecimento.objects,
+                                        widget=ModelSelect2Widget(model=Estabelecimento, search_fields=['nome__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e selecione uma empresa"}))
+
+    def __init__(self, *args, **kwargs):
+        self.agendamento = kwargs.pop('agendamento', None)
+        super(ConfirmacaoVacinaForm, self).__init__(*args,**kwargs)
+        
+        if self.agendamento:
+            self.fields['estabelecimento'].initial = self.agendamento.estabelecimento
+            self.fields['estabelecimento'].disabled = True
+        
+            self.fields['campanha'].initial = self.agendamento.campanha
+            self.fields['campanha'].disabled = True
+
+            self.fields['estoque'].queryset = Estoque.objects.filter(campanha=self.agendamento.campanha)
+
+    @transaction.atomic
+    def save(self):
+        self.agendamento.estoque = self.cleaned_data.get('estoque')
+        self.agendamento.status = Agendamento.APLICADA
+        self.agendamento.data_aplicacao = datetime.datetime.now()
+        self.agendamento.save()
+        Vacina.objects.create(estabelecimento=self.agendamento.estabelecimento,
+                                campanha=self.agendamento.campanha, paciente=self.agendamento.paciente,
+                                estoque=self.cleaned_data.get('estoque'), agendamento=self.agendamento)

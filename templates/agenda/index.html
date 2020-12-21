@@ -52,7 +52,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for campanha in campanhas %}
+                            {% for agendamento in minhas_vacinas %}
+                                <tr>
+                                    <td>{{agendamento.campanha.titulo}}</td>
+                                    <td>
+                                        <a href="{% url 'agenda:fila' agendamento.pk %}" class="btn btn-primary">Acompanhar Fila</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            {% for campanha in campanhas_sem_agendas %}
                                 <tr>
                                     <td>{{campanha.titulo}}</td>
                                     <td>

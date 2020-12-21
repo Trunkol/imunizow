@@ -18,4 +18,9 @@ urlpatterns = [
         path('<int:campanha_pk>/<int:estabelecimento_pk>/', views.agendar_vacinacao_data, name='agendar_vacinacao_data'),
     ])),
     
+    path(r'acompanhar_vacinacao/', include([
+        path('<int:agendamento_pk>/fila/', views.fila, name='fila'),
+    ])),
+    
+    path('<int:agendamento_pk>/confirmar_vacinacao/', views.confirmar_vacinacao, name='confirmar_vacinacao')
 ]
