@@ -14,7 +14,9 @@ from django.core.mail import send_mail
         
 @login_required
 def index(request):    
-    minhas_vacinas = Agendamento.objects.filter(paciente=request.user.paciente(), status=Agendamento.APLICADA)
+    minhas_vacinas = Agendamento.objects.filter(paciente=request.user.paciente(), 
+                                        status__in=[Agendamento.APLICADA, Agendamento.OCUPADO])
+    vacinas_pendentes = Agendamento.objects.filter(paciente=request.user.paciente())
     campanhas_ativas = Campanha.objects.filter(data_inicio__lte=date.today(), 
                                                         data_fim__gte=date.today())
     campanhas_sem_agendas = campanhas_ativas.exclude(pk__in=minhas_vacinas.values_list('campanha', flat=True))

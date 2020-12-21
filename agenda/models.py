@@ -62,7 +62,12 @@ class Agendamento(models.Model):
     data_aplicacao = models.DateTimeField(u'data_aplicacao', null=True)
 
     def foi_aplicada(self):
-        if self.status == APLICADA:
+        if self.status == Agendamento.APLICADA:
+            return True
+        return False
+
+    def foi_marcada(self):
+        if self.status == Agendamento.OCUPADO:
             return True
         return False
 

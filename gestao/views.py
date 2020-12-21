@@ -231,3 +231,44 @@ def cadastrar_agendamentos(request, estabelecimento_pk, campanha_pk):
             return HttpResponseRedirect(reverse('gestao:agendamentos', args=(estabelecimento_pk,)))
         return render(request, 'gestao/form_base.html', locals())
     raise PermissionDenied
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
+from django.db.models import Q
+from django.db import connection
+@login_required
+def dashboard_estabelecimento(request, estabelecimento_pk):
+    estabelecimento = get_object_or_404(Estabelecimento, pk=estabelecimento_pk)    
+    with connection.cursor() as cursor:
+        cursor.execute("""SELECT COUNT(0) FILTER (WHERE status = %s) AS \"ocupados\",
+                        COUNT(0) FILTER (WHERE status = %s) AS \"aplicadas\", 
+                        COUNT(0) FILTER (WHERE status = %s) AS \"disponivel\" 
+                        FROM agenda_agendamento WHERE estabelecimento_id = %s""", 
+                            [Agendamento.OCUPADO, Agendamento.APLICADA, 
+                                Agendamento.DISPONIVEL ,estabelecimento_pk])
+        agendamentos = dictfetchall(cursor)[0]    
+    agendamentos = dict(agendamentos)
+
+    return render(request, 'dashboard.html', locals())    
+
+@login_required
+def dashboard_geral(request):
+    with connection.cursor() as cursor:
+        cursor.execute("""SELECT COUNT(0) FILTER (WHERE status = %s) AS \"ocupados\",
+                        COUNT(0) FILTER (WHERE status = %s) AS \"aplicadas\", 
+                        COUNT(0) FILTER (WHERE status = %s) AS \"disponivel\" 
+                        FROM agenda_agendamento""", 
+                            [Agendamento.OCUPADO, Agendamento.APLICADA, 
+                                Agendamento.DISPONIVEL])
+        agendamentos = dictfetchall(cursor)[0]    
+    agendamentos = dict(agendamentos)
+
+    return render(request, 'dashboard.html', locals())    
+
+

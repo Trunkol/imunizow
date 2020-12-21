@@ -75,11 +75,18 @@
             <div id="navigation">
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
-                    {% if user.eh_profissional_saude or user.eh_coordenador_sus %}
+                    {% if user.eh_profissional_saude %}
+                        <li class="has-submenu">
+                            <a href="{% url 'gestao:dashboard_estabelecimento' user.profissional_saude.estabelecimento.pk %}"><i class="mdi mdi-view-dashboard"></i>Dashboard</a>
+                        </li>    
+                    {% endif %}
+                    
+                    {% if user.eh_coordenador_sus %}
                         <li class="has-submenu">
                             <a href="index.html"><i class="mdi mdi-view-dashboard"></i>Dashboard</a>
                         </li>    
                     {% endif %}
+                    
                     
                     {% if user.eh_paciente %}
                         <li class="has-submenu">

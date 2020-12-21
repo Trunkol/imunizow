@@ -53,7 +53,7 @@
                         </thead>
                         <tbody>
                             {% for agendamento in minhas_vacinas %}
-                                {% if not agendamento.foi_aplicada %}
+                                {% if agendamento.foi_marcada %}
                                     <tr>
                                         <td>{{agendamento.campanha.titulo}}</td>
                                         <td>
@@ -93,25 +93,36 @@
                     //end: new Date()
                 },
                 events: [
-                    {% for vac in minhas_vacinas %}
+                    {% for vac in vacinas_pendentes %}
                         {
                             title: '{{vac.campanha.titulo}}',
                             start: '{{vac.data|date:"Y-m-d"}}',
                             extendedProps: {
                                 estabelecimento: '{{ vac.estabelecimento.nome }}',
-                                endereco: '{{ vac.estabelecimento.get_endereco }}'
+                                endereco: '{{ vac.estabelecimento.get_endereco }}',
+                                status: '{{ vac.status }}'
                             },
                         },
                     {% endfor %}
                 ],
                 eventClick: function(info) {
-                    Swal.fire(
-                        'Vacina a vista!',
-                        'Se dirija ao estabelecimento: '+info.event.extendedProps.estabelecimento+',\nno endereço: '+
-                        info.event.extendedProps.endereco,
-                        'success'
-                        )
-                    info.el.style.borderColor = 'red';
+                    if (info.event.extendedProps.status == 'Aplicada'){
+                        Swal.fire(
+                            'Vacina Aplicada!',
+                            'Vacina no estabelecimento: '+info.event.extendedProps.estabelecimento+',\nno endereço: '+
+                            info.event.extendedProps.endereco,
+                            'success'
+                            )
+                        info.el.style.borderColor = 'red';
+                    }else{
+                        Swal.fire(
+                            'Vacina a vista!',
+                            'Dirija-se ao estabelecimento: '+info.event.extendedProps.estabelecimento+',\nno endereço: '+
+                            info.event.extendedProps.endereco,
+                            'success'
+                            )
+                        info.el.style.borderColor = 'red';
+                    }
                 },
             });
 

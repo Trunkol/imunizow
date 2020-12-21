@@ -13,7 +13,7 @@ fi
 
 echo "[INFO] Rodando as migrações"
 
-python manage.py flush --no-input
+#python manage.py flush --no-input
 python manage.py migrate
 
 #echo "[INFO] Rodando os testes"

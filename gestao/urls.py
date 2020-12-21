@@ -5,7 +5,8 @@ app_name = 'gestao'
 
 urlpatterns = [
     path('sair/', views.sair, name='sair'),
-    path('dashboard', views.dashboard, name='dashboard'),
+    path('dashboard/<int:estabelecimento_pk>', views.dashboard_estabelecimento, name='dashboard_estabelecimento'),
+    path('dashboard/', views.dashboard_geral, name='dashboard_geral'),
     path('municipio/<ibge>', views.busca_municipio),
 
     path(r'estabelecimentos/', include([

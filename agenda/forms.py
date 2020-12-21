@@ -4,6 +4,7 @@ from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
 from agenda.models import Campanha, Estoque, Agendamento, Vacina, VacinaPrivada
 from gestao.models import Estabelecimento, Paciente
+from django.db.models import Sum, Max, Count
 import datetime
 
 class CampanhaForm(forms.ModelForm):
@@ -104,7 +105,8 @@ class AgendamentoForm(forms.ModelForm):
             self.add_error('quantidade', 'A quantidade não pode ser menor que zero')
 
         if int(quantidade) > campanha.estoque_disponivel():
-            self.add_error('quantidade', 'O número de agendamentos supera as vacinas disponíveis para este estabelecimento: {}'.format(campanha.estoque_disponivel()))
+            estoque_disponivel = Estoque.objects.filter(estabelecimento=self.estabelecimento, campanha=self.campanha).aggregate(qtd=Sum('quantidade'))['qtd']
+            self.add_error('quantidade', 'O número de agendamentos supera as vacinas disponíveis para este estabelecimento: {}'.format(estoque_disponivel or 0))
 
         if data < datetime.date(2020, 12, 10):
             self.add_error('data', 'A data não pode ser inferior a 12/2020')
