@@ -155,13 +155,10 @@ SOCIAL_AUTH_SABIA_EXTRA_DATA = [  # add this
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
-SENDGRID_API_KEY = env('SENDGRID_API_KEY')
-
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'apikey'
-EMAIL_HOST_PASSWORD = SENDGRID_API_KEY
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = env('MAILGUN_SMTP_SERVER', '')
+EMAIL_PORT = env('MAILGUN_SMTP_PORT', '')
+EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN', '')
+EMAIL_HOST_PASSWORD = env('MAILGUN_SMTP_PASSWORD', '')
 
 try:
     from .local_settings import *
