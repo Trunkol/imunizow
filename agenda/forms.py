@@ -3,7 +3,7 @@ from django.db import transaction
 from django.urls import reverse
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget, Select2Widget
 from agenda.models import Campanha, Estoque, Agendamento, Vacina, VacinaPrivada
-from gestao.models import Estabelecimento
+from gestao.models import Estabelecimento, Paciente
 import datetime
 
 class CampanhaForm(forms.ModelForm):
@@ -231,3 +231,30 @@ class ConfirmacaoVacinaForm(forms.Form):
         Vacina.objects.create(estabelecimento=self.agendamento.estabelecimento,
                                 campanha=self.agendamento.campanha, paciente=self.agendamento.paciente,
                                 estoque=self.cleaned_data.get('estoque'), agendamento=self.agendamento)
+
+
+class VacinaPrivadaForm(forms.ModelForm):
+    descricao = forms.CharField(label='Nome da Vacina', max_length=20, 
+                            widget=forms.TextInput(attrs={'placeholder': 'Descrição da vacina aplicada', 'class': "form-control"}))
+    estabelecimento = forms.CharField(label='Estabelecimento', max_length=20, 
+                            widget=forms.TextInput(attrs={'placeholder': 'Estabelecimento de saúde', 'class': "form-control"}))
+    data_vacinacao = forms.DateField(label=u'Data da vacinação', input_formats=['%d/%m/%Y'], widget=forms.DateInput(format='%d/%m/%Y',
+                                    attrs={'placeholder': 'dia/mês/ano', 'class': 'form-control', 
+                                            'data-toggle': "input-mask", 'data-mask-format': "00/00/0000"}))
+    lote = forms.CharField(label='Lote da Vacina', max_length=20, 
+                            widget=forms.TextInput(attrs={'placeholder': 'código do lote de vacinação', 'class': "form-control"}))
+    paciente = forms.ModelChoiceField(label='Paciente', queryset=Paciente.objects, required=True,
+                                        widget=ModelSelect2Widget(model=Paciente, search_fields=['lote__icontains'],
+                                        attrs={'class': "form-control", "data-minimum-input-length": "0", 
+                                                "data-placeholder": "Busque e Selecione um paciente"}))
+    class Meta:
+        model = VacinaPrivada
+        exclude = ()
+
+    def __init__(self, *args, **kwargs):
+        self.paciente = kwargs.pop('paciente', None)
+        super(VacinaPrivadaForm, self).__init__(*args,**kwargs)
+
+        if self.paciente:
+            self.fields['paciente'].initial = self.paciente
+            self.fields['paciente'].disabled = True

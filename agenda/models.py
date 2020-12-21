@@ -15,7 +15,8 @@ class Campanha(models.Model):
     def estoque_cadastrado(self):
         if self.estoque_set.exists():
             return self.estoque_set.aggregate(qtd=Sum('quantidade'))['qtd']
-    
+        return 0
+
     def estoque_disponivel(self):
         disponiveis = 0
         if self.estoque_set.exists():
@@ -59,6 +60,10 @@ class Agendamento(models.Model):
     estoque = models.ForeignKey(Estoque, on_delete=models.CASCADE, null=True)
     data_aplicacao = models.DateTimeField(u'data_aplicacao', null=True)
 
+    def foi_aplicada(self):
+        if self.status == APLICADA:
+            return True
+        return False
 
 class Vacina(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, null=True)

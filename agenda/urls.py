@@ -22,5 +22,7 @@ urlpatterns = [
         path('<int:agendamento_pk>/fila/', views.fila, name='fila'),
     ])),
     
-    path('<int:agendamento_pk>/confirmar_vacinacao/', views.confirmar_vacinacao, name='confirmar_vacinacao')
+    path('<int:agendamento_pk>/confirmar_vacinacao/', views.confirmar_vacinacao, name='confirmar_vacinacao'),
+    path('cadastrar_vacina_privada/', views.cadastrar_vacina_privada, name='cadastrar_vacina_privada')
+
 ]

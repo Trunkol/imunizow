@@ -26,8 +26,8 @@
     </div>
 
     <div class="row" style="padding-bottom: 10px;">
-        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-9 col-lg-3">    
-            <a href="{% url 'gestao:cadastrar_estabelecimento' %}" class="btn btn-block btn-rounded btn-success pull-right">Cadastrar Estabelecimento</a>
+        <div class="col-sm-12 offset-md-8 col-md-4 offset-lg-9 col-lg-3">
+            <a href="{% url 'agenda:cadastrar_vacina_privada' %}"  class="btn btn-block btn-rounded btn-success pull-right">Cadastrar Vacina Privada</a>
         </div>
     </div>
 
@@ -38,22 +38,38 @@
                     <table id="tabela-prestadores" class="table table-striped dt-responsive nowrap">
                         <thead>
                             <tr>
-                                <th data-priority="2">#</th>
-                                <th data-priority="3">Estabelecimento</th>
-                                <th data-priority="2">CNES</th>
-                                <th data-priority="2">Prestador</th>
-                                <th data-priority="2">Ações</th>
+                                <th data-priority="2">Data de Aplicação</th>
+                                <th data-priority="3">Descrição</th>
+                                <th data-priority="2">Estabelecimento</th>
+                                <th data-priority="2">Lote da Vacina</th>
+                                <th data-priority="2">Origem</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>2</td>
-                                <td>3</td>
-                                <td>4</td>
-                                <td>5</td>
-                            </tr>
+                            {% for item in vacinas_publicas%}
+                                <tr>
+                                    <td>{{ item.agendamento.data_aplicacao|date:'d/m/Y' }}</td>
+                                    <td>{{ item.campanha.titulo }}</td>
+                                    <td>{{ item.estabelecimento }}</td>
+                                    <td>{{ item.estoque.lote }}</td>
+                                    <td>
+                                        <span class="btn btn-success btn-rounded width-sm waves-effect waves-light">Rede Pública</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            
+                            {% for item in vacinas_privadas%}
+                                <tr>
+                                    <td>{{ item.data_vacinacao|date:'d/m/Y' }}</td>
+                                    <td>{{ item.descricao }}</td>
+                                    <td>{{ item.estabelecimento }}</td>
+                                    <td>{{ item.lote }}</td>
+                                    <td>
+                                        <span class="btn btn-danger btn-rounded width-sm waves-effect waves-light">Rede Privada</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div> <!-- end card body-->

@@ -86,8 +86,20 @@
                             <a href="{% url 'agenda:index' %}"><i class="mdi mdi-view-dashboard"></i>Início</a>
                         </li>        
                         <li class="has-submenu">
-                            <a href="{% url 'agenda:minhas_vacinas' user.paciente.pk %}"><i class="mdi mdi-view-dashboard"></i>Minhas Vacinas</a>
+                            <a href="{% url 'agenda:minhas_vacinas' user.paciente.pk %}"><i class="mdi mdi-view-dashboard"></i>Cartão de Vacinas</a>
                         </li>        
+                        <li class="has-submenu">
+                            <a href="#"><i class="mdi mdi-view-dashboard"></i>Vacinas</a>
+                            <ul class="submenu megamenu">
+                                <li>
+                                    <ul>
+                                        <li>
+                                            <a href="{% url 'agenda:cadastrar_vacina_privada' %}">Cadastrar Vacina Privada</a>
+                                        </li>                                        
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
                     {% endif %}
                     
                     {% if user.eh_coordenador_sus %}

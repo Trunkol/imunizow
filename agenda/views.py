@@ -6,14 +6,15 @@ from django.urls import reverse
 from gestao.models import Paciente, PessoaFisica, User, Estabelecimento
 from django.db import transaction
 from agenda.forms import CampanhaForm, AgendarVacinacaoEstabelecimentoForm, \
-                         AgendarVacinacaoDataForm, ConfirmacaoVacinaForm
-from agenda.models import Campanha, Agendamento
+                         AgendarVacinacaoDataForm, ConfirmacaoVacinaForm, \
+                         VacinaPrivadaForm
+from agenda.models import Campanha, Agendamento, Vacina, VacinaPrivada
 from datetime import datetime, date
 from django.core.mail import send_mail
         
 @login_required
 def index(request):    
-    minhas_vacinas = Agendamento.objects.filter(paciente=request.user.paciente())
+    minhas_vacinas = Agendamento.objects.filter(paciente=request.user.paciente(), status=Agendamento.APLICADA)
     campanhas_ativas = Campanha.objects.filter(data_inicio__lte=date.today(), 
                                                         data_fim__gte=date.today())
     campanhas_sem_agendas = campanhas_ativas.exclude(pk__in=minhas_vacinas.values_list('campanha', flat=True))
@@ -41,6 +42,11 @@ def autocadastro(request):
 @login_required
 def minhas_vacinas(request, paciente_pk):
     title = 'Minhas Vacinas'
+    paciente = get_object_or_404(Paciente, pk=paciente_pk)    
+    
+    vacinas_publicas = Vacina.objects.filter(paciente=paciente)
+    vacinas_privadas = VacinaPrivada.objects.filter(paciente=paciente)
+
     return render(request, 'agenda/minhas_vacinas.html', locals())
 
 
@@ -130,4 +136,14 @@ def confirmar_vacinacao(request, agendamento_pk):
         #ProfissionalSaude.objects.filter(estabelecimento=agendamento.estabelecimento)
         #send_mail('[IMUNIZOW] Vacina Aplicada', 'Here is the message.', 'from@example.com', ['to@example.com'], fail_silently=True)
         return HttpResponseRedirect(reverse('gestao:agendamentos_estabelecimento', args=(agendamento.estabelecimento.pk,)))
+    return render(request, 'gestao/form_base.html', locals())
+
+@login_required
+def cadastrar_vacina_privada(request):
+    title = 'Cadastro de Vacina Privada'
+    paciente = request.user.paciente()
+    form = VacinaPrivadaForm(data=request.POST or None, paciente=paciente)
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse('agenda:index'))
     return render(request, 'gestao/form_base.html', locals())

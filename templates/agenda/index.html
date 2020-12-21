@@ -53,12 +53,14 @@
                         </thead>
                         <tbody>
                             {% for agendamento in minhas_vacinas %}
-                                <tr>
-                                    <td>{{agendamento.campanha.titulo}}</td>
-                                    <td>
-                                        <a href="{% url 'agenda:fila' agendamento.pk %}" class="btn btn-primary">Acompanhar Fila</a>
-                                    </td>
-                                </tr>
+                                {% if not agendamento.foi_aplicada %}
+                                    <tr>
+                                        <td>{{agendamento.campanha.titulo}}</td>
+                                        <td>
+                                            <a href="{% url 'agenda:fila' agendamento.pk %}" class="btn btn-primary">Acompanhar Fila</a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
 
                             {% for campanha in campanhas_sem_agendas %}
