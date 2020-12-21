@@ -17,14 +17,16 @@ class Campanha(models.Model):
             return self.estoque_set.aggregate(qtd=Sum('quantidade'))['qtd']
     
     def estoque_disponivel(self):
-        aplicadas = 0
+        disponiveis = 0
         if self.estoque_set.exists():
             total_cadastrado = self.estoque_set.aggregate(qtd=Sum('quantidade'))['qtd']
-        
+            disponiveis = total_cadastrado
+
         if self.agendamento_set.exists():
             aplicadas = self.agendamento_set.filter(status=Agendamento.APLICADA).aggregate(total=Count('pk'))['total']
+            disponiveis -= aplicadas
 
-        return (total_cadastrado - aplicadas)
+        return disponiveis
 
     def agendamentos(self):
         if self.agendamento_set.exists():
