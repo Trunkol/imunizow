@@ -83,7 +83,7 @@
                     
                     {% if user.eh_coordenador_sus %}
                         <li class="has-submenu">
-                            <a href="index.html"><i class="mdi mdi-view-dashboard"></i>Dashboard</a>
+                            <a href="{% url 'gestao:dashboard_geral' %}"><i class="mdi mdi-view-dashboard"></i>Dashboard</a>
                         </li>    
                     {% endif %}
                     

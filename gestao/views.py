@@ -245,6 +245,11 @@ from django.db import connection
 @login_required
 def dashboard_estabelecimento(request, estabelecimento_pk):
     estabelecimento = get_object_or_404(Estabelecimento, pk=estabelecimento_pk)    
+    
+    with connection.cursor() as cursor:
+        cursor.execute("""select distinct data from agenda_agendamento where status = %s""", [Agendamento.APLICADA])
+        dias_com_agendamento = dictfetchall(cursor)
+
     with connection.cursor() as cursor:
         cursor.execute("""SELECT COUNT(0) FILTER (WHERE status = %s) AS \"ocupados\",
                         COUNT(0) FILTER (WHERE status = %s) AS \"aplicadas\", 
@@ -253,8 +258,14 @@ def dashboard_estabelecimento(request, estabelecimento_pk):
                             [Agendamento.OCUPADO, Agendamento.APLICADA, 
                                 Agendamento.DISPONIVEL ,estabelecimento_pk])
         agendamentos = dictfetchall(cursor)[0]    
-    agendamentos = dict(agendamentos)
 
+    agendamentos = dict(agendamentos)
+    
+    qtd_dias = len(dias_com_agendamento)
+    if qtd_dias:
+        atendimentos_por_dia = agendamentos['aplicadas']/qtd_dias
+
+    
     return render(request, 'dashboard.html', locals())    
 
 @login_required
@@ -267,7 +278,14 @@ def dashboard_geral(request):
                             [Agendamento.OCUPADO, Agendamento.APLICADA, 
                                 Agendamento.DISPONIVEL])
         agendamentos = dictfetchall(cursor)[0]    
-    agendamentos = dict(agendamentos)
+        agendamentos = dict(agendamentos)
+
+    with connection.cursor() as cursor:
+        cursor.execute("""select distinct data from agenda_agendamento where status = %s""", [Agendamento.APLICADA])
+        dias_com_agendamento = dictfetchall(cursor)
+        qtd_dias = len(dias_com_agendamento)
+        if qtd_dias:
+            atendimentos_por_dia = agendamentos['aplicadas']/qtd_dias
 
     return render(request, 'dashboard.html', locals())    
 
