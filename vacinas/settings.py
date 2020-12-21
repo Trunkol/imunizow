@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import django_heroku
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -142,23 +143,25 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+try:
+    import environ
+    env = environ.Env()
+    environ.Env.read_env()
 
-import environ
-env = environ.Env()
-environ.Env.read_env()
+    SOCIAL_AUTH_SABIA_KEY=env('SOCIAL_AUTH_SABIA_KEY')
+    SOCIAL_AUTH_SABIA_SECRET=env('SOCIAL_AUTH_SABIA_SECRET')
+    SOCIAL_AUTH_SABIA_EXTRA_DATA = [  # add this
+        ('avatar', 'avatar'),
+    ]
 
-SOCIAL_AUTH_SABIA_KEY=env('SOCIAL_AUTH_SABIA_KEY')
-SOCIAL_AUTH_SABIA_SECRET=env('SOCIAL_AUTH_SABIA_SECRET')
-SOCIAL_AUTH_SABIA_EXTRA_DATA = [  # add this
-    ('avatar', 'avatar'),
-]
+    MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
-MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
-
-EMAIL_HOST = env('MAILGUN_SMTP_SERVER')
-EMAIL_PORT = env('MAILGUN_SMTP_PORT')
-EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN')
-EMAIL_HOST_PASSWORD = env('MAILGUN_SMTP_PASSWORD')
+    EMAIL_HOST = env('MAILGUN_SMTP_SERVER')
+    EMAIL_PORT = env('MAILGUN_SMTP_PORT')
+    EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN')
+    EMAIL_HOST_PASSWORD = env('MAILGUN_SMTP_PASSWORD')
+except:
+    print('não consegui subir')
 
 try:
     from .local_settings import *
@@ -167,3 +170,5 @@ except:
         # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
         'default': env.db(),
     }
+    django_heroku.settings(locals())
+
