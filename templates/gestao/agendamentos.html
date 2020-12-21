@@ -47,15 +47,15 @@
                         </thead>
 
                         <tbody>
-                            {% for campanha in campanhas %}
+                            {% for campanha in campanhas_total %}
                                 <tr id="{{campanha.campanha__id}}">
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ campanha.titulo }}</td>
-                                    <td>{{ campanha.data_inicio }}</td>
-                                    <td>{{ campanha.data_fim }}</td>
-                                    <td>{{ campanha.agendamentos|default:'-' }}</td>
+                                    <td>{{ campanha.objeto.titulo }}</td>
+                                    <td>{{ campanha.objeto.data_inicio }}</td>
+                                    <td>{{ campanha.objeto.data_fim }}</td>
+                                    <td>{{ campanha.total|default:'-' }}</td>
                                     <td>
-                                        <a href="{% url 'gestao:cadastrar_agendamentos' estabelecimento_pk=estabelecimento.pk campanha_pk=campanha.pk %}" class="btn btn-success btn-rounded">Adicionar Agendamentos</a>
+                                        <a href="{% url 'gestao:cadastrar_agendamentos' estabelecimento_pk=estabelecimento.pk campanha_pk=campanha.objeto.pk %}" class="btn btn-success btn-rounded">Adicionar Agendamentos</a>
                                     </td>
                                 </tr>
                             {% endfor %}

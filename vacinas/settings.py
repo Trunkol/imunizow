@@ -143,6 +143,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
 try:
     import environ
     env = environ.Env()
@@ -161,7 +162,7 @@ try:
     EMAIL_HOST_USER = env('MAILGUN_SMTP_LOGIN')
     EMAIL_HOST_PASSWORD = env('MAILGUN_SMTP_PASSWORD')
 except:
-    print('não consegui subir')
+    pass
 
 try:
     from .local_settings import *

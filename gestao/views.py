@@ -7,10 +7,11 @@ from gestao.forms import EstabelecimentoForm, PessoaFisicaForm
 from agenda.forms import EstoqueForm, AgendamentoForm
 from django.http import HttpResponseRedirect, JsonResponse
 from django.db import transaction
+from django.db.models import Sum, Max, Count
 from django.urls import reverse
 from gestao.models import Estabelecimento, Municipio, Estado, \
                             ProfissionalSaude, CoordenadorSus, User
-from agenda.models import Campanha, Agendamento
+from agenda.models import Campanha, Agendamento, Estoque
 
 # Create your views here.
 @login_required
@@ -175,6 +176,11 @@ def gestao_vacinas(request, pk):
         title = 'Gestão de Vacinas'
         estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
         campanhas = estabelecimento.campanha_set.all()
+        campanhas_total = []
+        for camp in campanhas:
+            estoque = Estoque.objects.filter(estabelecimento=estabelecimento, campanha=camp)\
+                                        .aggregate(qtd=Sum('quantidade'))['qtd']
+            campanhas_total.append({'total': estoque, 'objeto': camp})
         return render(request, 'gestao/estoque.html', locals())
     raise PermissionDenied
 
@@ -198,6 +204,11 @@ def agendamentos(request, pk):
     title = 'Agendamentos por Campanha'
     estabelecimento = get_object_or_404(Estabelecimento, pk=pk)
     campanhas = estabelecimento.campanha_set.all()
+    campanhas_total = []
+    for camp in campanhas:
+        agendamento = Agendamento.objects.filter(estabelecimento=estabelecimento, campanha=camp)\
+                                    .aggregate(qtd=Count('pk'))['qtd']
+        campanhas_total.append({'total': agendamento, 'objeto': camp})
     return render(request, 'gestao/agendamentos.html', locals())
 
 @login_required

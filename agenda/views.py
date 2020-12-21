@@ -43,7 +43,6 @@ def autocadastro(request):
 def minhas_vacinas(request, paciente_pk):
     title = 'Minhas Vacinas'
     paciente = get_object_or_404(Paciente, pk=paciente_pk)    
-    
     vacinas_publicas = Vacina.objects.filter(paciente=paciente)
     vacinas_privadas = VacinaPrivada.objects.filter(paciente=paciente)
 

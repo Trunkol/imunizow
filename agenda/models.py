@@ -33,6 +33,7 @@ class Campanha(models.Model):
         if self.agendamento_set.exists():
            return self.agendamento_set.aggregate(total=Count('pk'))['total']
 
+
 class Estoque(models.Model):
     quantidade = models.IntegerField('Quantidade de Vacinas')
     estabelecimento = models.ForeignKey(Estabelecimento, on_delete=models.CASCADE)

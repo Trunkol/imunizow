@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load static %}
+{% load static filters %}
 
 {% block css %}
     <link href="{% static 'libs/datatables/dataTables.bootstrap4.css' %}" rel="stylesheet" type="text/css" />
@@ -42,22 +42,20 @@
                                 <th data-priority="2">Data de Início</th>
                                 <th data-priority="2">Data de Fim</th>
                                 <th data-priority="2">Estoque Cadastrado</th>
-                                <th data-priority="2">Estoque Disponível</th>
                                 <th data-priority="2">Ações</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for campanha in campanhas %}
+                            {% for campanha in campanhas_total %}
                                 <tr id="{{campanha.campanha__id}}">
                                     <td>{{ forloop.counter }}</td>
-                                    <td>{{ campanha.titulo }}</td>
-                                    <td>{{ campanha.data_inicio }}</td>
-                                    <td>{{ campanha.data_fim }}</td>
-                                    <td>{{ campanha.estoque_cadastrado }}</td>
-                                    <td>{{ campanha.estoque_disponivel }}</td>
+                                    <td>{{ campanha.objeto.titulo }}</td>
+                                    <td>{{ campanha.objeto.data_inicio|date:'d/m/Y' }}</td>
+                                    <td>{{ campanha.objeto.data_fim|date:'d/m/Y' }}</td>
+                                    <td>{{ campanha.total|default:0 }}</td>
                                     <td>
-                                        <a href="{% url 'gestao:cadastrar_estoque' estabelecimento_pk=estabelecimento.pk campanha_pk=campanha.pk %}" class="btn btn-success btn-rounded">Adicionar Estoque</a>
+                                        <a href="{% url 'gestao:cadastrar_estoque' estabelecimento_pk=estabelecimento.pk campanha_pk=campanha.objeto.pk %}" class="btn btn-success btn-rounded">Adicionar Estoque</a>
                                     </td>
                                 </tr>
                             {% endfor %}
